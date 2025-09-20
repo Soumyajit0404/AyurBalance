@@ -77,11 +77,11 @@ export default function LoginPage() {
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen bg-background overflow-hidden">
         <Image 
-            src="https://picsum.photos/seed/ayurveda-bg/1920/1080"
-            alt="Ayurvedic background"
+            src="https://picsum.photos/seed/ayurveda-leaves/1920/1080"
+            alt="Ayurvedic background with leaves"
             fill
             className="object-cover w-full h-full z-0 opacity-20"
-            data-ai-hint="ayurveda background"
+            data-ai-hint="ayurveda leaves"
         />
         <div className="z-10 flex flex-col items-center justify-center w-full">
             <div className="flex items-center gap-4 mb-8 text-primary">
