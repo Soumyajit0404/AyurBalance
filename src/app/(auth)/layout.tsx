@@ -1,4 +1,4 @@
-import AuthWrapper from "@/hooks/use-auth";
+import AuthWrapper from "@/hooks/use-auth.tsx";
 
 export default function AuthLayout({
   children,

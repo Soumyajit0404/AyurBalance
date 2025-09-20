@@ -1,7 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/layout/app-shell";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth.tsx";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Loading from "./loading";
