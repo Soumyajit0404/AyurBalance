@@ -4,9 +4,9 @@ import {
   HeartPulse,
   Leaf,
   BookOpen,
-  Wind,
-  Flame,
-  Mountain,
+  Pipette,
+  MessageCircleQuestion,
+  TrendingUp,
   ArrowRight,
 } from "lucide-react"
 import {
@@ -15,6 +15,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card"
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
@@ -24,48 +25,54 @@ const features = [
     title: "Patient Management",
     description: "Create and manage detailed profiles for your patients.",
     icon: <HeartPulse className="size-8 text-primary" />,
+    href: "/patients",
   },
   {
     title: "Food Database",
     description: "Browse a comprehensive database of foods and their properties.",
     icon: <Leaf className="size-8 text-primary" />,
+    href: "/food-database",
   },
   {
     title: "AI Diet Plans",
     description: "Generate personalized Ayurvedic diet plans with our AI tool.",
     icon: <BookOpen className="size-8 text-primary" />,
+    href: "/diet-plan-tool",
   },
 ]
 
-const doshas = [
+const tools = [
   {
-    title: "Vata (Air & Ether)",
-    description: "Governs movement, creativity, and vitality. Prone to anxiety and dryness when imbalanced.",
-    icon: <Wind className="size-8 text-primary" />,
+    title: "Recipe Analysis",
+    description: "Analyze any recipe for its nutritional and Ayurvedic properties.",
+    icon: <Pipette className="size-8 text-primary" />,
+    href: "/recipe-analysis",
     image: {
-      url: "https://picsum.photos/seed/vata-dosha/600/400",
-      alt: "Illustration of wind and flowing leaves",
-      hint: "wind leaves",
+      url: "https://picsum.photos/seed/recipe-analysis/600/400",
+      alt: "Hands preparing ingredients for a healthy meal",
+      hint: "cooking food",
     },
   },
   {
-    title: "Pitta (Fire & Water)",
-    description: "Controls digestion, metabolism, and intelligence. Imbalances can lead to inflammation and anger.",
-    icon: <Flame className="size-8 text-primary" />,
+    title: "Ayurvedic Q&A",
+    description: "Ask our AI assistant about diet, wellness, and Ayurvedic principles.",
+    icon: <MessageCircleQuestion className="size-8 text-primary" />,
+    href: "/q-and-a",
     image: {
-      url: "https://picsum.photos/seed/pitta-dosha/600/400",
-      alt: "Illustration of a gentle flame",
-      hint: "gentle flame",
+      url: "https://picsum.photos/seed/q-and-a/600/400",
+      alt: "A person looking at a laptop and thinking",
+      hint: "person thinking",
     },
   },
   {
-    title: "Kapha (Earth & Water)",
-    description: "Provides structure, stability, and lubrication. Excess Kapha can cause lethargy and congestion.",
-    icon: <Mountain className="size-8 text-primary" />,
+    title: "Wellness Journey",
+    description: "Visualize patient progress and dosha balance over time.",
+    icon: <TrendingUp className="size-8 text-primary" />,
+    href: "/profile",
     image: {
-      url: "https://picsum.photos/seed/kapha-dosha/600/400",
-      alt: "Illustration of stable, earthy mountains",
-      hint: "earthy mountains",
+      url: "https://picsum.photos/seed/wellness-chart/600/400",
+      alt: "A chart showing an upward trend line",
+      hint: "progress chart",
     },
   },
 ]
@@ -94,46 +101,56 @@ export default function DashboardPage() {
         <h2 className="text-3xl font-headline text-center text-primary mb-8">Core Features</h2>
         <div className="grid gap-6 md:grid-cols-3">
           {features.map((feature) => (
-            <Card key={feature.title} className="text-center">
-              <CardHeader>
-                <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit">
-                   {feature.icon}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardTitle className="font-headline text-2xl">{feature.title}</CardTitle>
-                <CardDescription className="mt-2">{feature.description}</CardDescription>
-              </CardContent>
-            </Card>
+             <Link href={feature.href} key={feature.title}>
+              <Card className="text-center h-full hover:shadow-lg transition-shadow duration-300 flex flex-col">
+                <CardHeader>
+                  <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit">
+                    {feature.icon}
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <CardTitle className="font-headline text-2xl">{feature.title}</CardTitle>
+                  <CardDescription className="mt-2">{feature.description}</CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* Doshas Section */}
+      {/* Explore Tools Section */}
       <section>
-        <h2 className="text-3xl font-headline text-center text-primary mb-8">Understanding the Doshas</h2>
+        <h2 className="text-3xl font-headline text-center text-primary mb-8">Explore Our Tools</h2>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {doshas.map((dosha) => (
-            <Card key={dosha.title} className="flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
+          {tools.map((tool) => (
+            <Card key={tool.title} className="flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <CardHeader className="p-0">
                 <Image
-                  src={dosha.image.url}
-                  alt={dosha.image.alt}
+                  src={tool.image.url}
+                  alt={tool.image.alt}
                   width={600}
                   height={400}
-                  data-ai-hint={dosha.image.hint}
+                  data-ai-hint={tool.image.hint}
                   className="aspect-video object-cover"
                 />
               </CardHeader>
-              <CardContent className="flex-grow p-6">
-                <div className="flex items-start gap-4">
-                  {dosha.icon}
+              <CardContent className="flex-grow p-6 flex flex-col">
+                 <div className="flex items-start gap-4 mb-4">
+                  {tool.icon}
                   <div className="flex-1">
-                    <CardTitle className="font-headline text-2xl">{dosha.title}</CardTitle>
-                    <p className="mt-2 text-muted-foreground">{dosha.description}</p>
+                    <CardTitle className="font-headline text-2xl">{tool.title}</CardTitle>
+                    <p className="mt-2 text-muted-foreground">{tool.description}</p>
                   </div>
                 </div>
               </CardContent>
+              <CardFooter>
+                 <Button asChild variant="outline" className="w-full">
+                  <Link href={tool.href}>
+                    Go to {tool.title}
+                    <ArrowRight className="ml-2 size-4" />
+                  </Link>
+                </Button>
+              </CardFooter>
             </Card>
           ))}
         </div>
