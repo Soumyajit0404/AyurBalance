@@ -36,6 +36,8 @@ const prompt = ai.definePrompt({
 
   Patient Data: {{{patientData}}}
 
+  Format the output as a structured diet plan. Use clear headings for each section (e.g., "Breakfast," "Lunch," "Dinner," "Lifestyle Advice").
+  Under each heading, use bullet points or a numbered list to present the recommendations. Do not write one long continuous paragraph.
   Ensure the diet plan aligns with Ayurvedic principles and provides specific food recommendations, meal timings, and lifestyle advice.
 `,
 });
