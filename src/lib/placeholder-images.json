@@ -1,3 +1,35 @@
+
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "dash-patients",
+      "description": "A doctor reviewing a patient's chart.",
+      "imageUrl": "https://picsum.photos/seed/dash-patients/600/400",
+      "imageHint": "doctor patient"
+    },
+    {
+      "id": "dash-food",
+      "description": "A colorful array of fresh vegetables and fruits.",
+      "imageUrl": "https://picsum.photos/seed/dash-food/600/400",
+      "imageHint": "fresh vegetables"
+    },
+    {
+      "id": "dash-diet",
+      "description": "A person writing in a diet journal.",
+      "imageUrl": "https://picsum.photos/seed/dash-diet/600/400",
+      "imageHint": "diet journal"
+    },
+    {
+      "id": "dash-recipe",
+      "description": "Hands preparing ingredients for a healthy meal.",
+      "imageUrl": "https://picsum.photos/seed/dash-recipe/600/400",
+      "imageHint": "cooking food"
+    },
+    {
+      "id": "dash-q-and-a",
+      "description": "A person looking at a laptop and thinking.",
+      "imageUrl": "https://picsum.photos/seed/dash-q-and-a/600/400",
+      "imageHint": "person thinking"
+    }
+  ]
 }
