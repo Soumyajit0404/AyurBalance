@@ -1,108 +1,143 @@
 import Link from "next/link"
 import Image from "next/image"
 import {
-  Carrot,
-  NotebookText,
-  Pipette,
-  Users,
-  MessageCircleQuestion,
+  Globe,
+  Activity,
+  ShieldCheck,
+  Building,
+  Mountain,
+  Leaf,
   ArrowRight,
 } from "lucide-react"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 import { PageHeader } from "@/components/page-header"
-import { PlaceHolderImages } from "@/lib/placeholder-images"
 import { Button } from "@/components/ui/button"
 
 const features = [
   {
-    title: "Patient Profiles",
-    description: "Manage patient demographics, health data, and dietary preferences.",
-    href: "/patients",
-    icon: <Users className="size-8 text-primary" />,
-    image: PlaceHolderImages.find((img) => img.id === 'dash-patients'),
-    priority: true,
+    title: "Real-Time Data Integration",
+    description: "Track asteroids with live data from global observatories.",
+    icon: <Globe className="size-8 text-primary" />,
   },
   {
-    title: "Food Database",
-    description: "Browse foods with nutritional and Ayurvedic attributes.",
-    href: "/food-database",
-    icon: <Carrot className="size-8 text-primary" />,
-    image: PlaceHolderImages.find((img) => img.id === 'dash-food'),
+    title: "Impact Simulation",
+    description: "Model and visualize potential impact scenarios on a global scale.",
+    icon: <Activity className="size-8 text-primary" />,
   },
   {
-    title: "AI Diet Plan Tool",
-    description: "Generate personalized Ayurvedic diet plans based on patient data.",
-    href: "/diet-plan-tool",
-    icon: <NotebookText className="size-8 text-primary" />,
-    image: PlaceHolderImages.find((img) => img.id === 'dash-diet'),
-  },
-  {
-    title: "Recipe Analysis",
-    description: "Analyze custom recipes for nutritional and Ayurvedic properties.",
-    href: "/recipe-analysis",
-    icon: <Pipette className="size-8 text-primary" />,
-    image: PlaceHolderImages.find((img) => img.id === 'dash-recipe'),
-  },
-  {
-    title: "Natural Language Q&A",
-    description: "Ask questions about diet and wellness using natural language.",
-    href: "/q-and-a",
-    icon: <MessageCircleQuestion className="size-8 text-primary" />,
-    image: PlaceHolderImages.find((img) => img.id === 'dash-q-and-a'),
+    title: "Mitigation Strategies",
+    description: "Explore and evaluate different strategies to prevent or reduce impact.",
+    icon: <ShieldCheck className="size-8 text-primary" />,
   },
 ]
 
+const riskFactors = [
+  {
+    title: "Seismic Effect",
+    description: "Analyze the potential for earthquakes and tsunamis following an impact.",
+    icon: <Mountain className="size-8 text-primary" />,
+    image: {
+      url: "https://picsum.photos/seed/seismic-effect/600/400",
+      alt: "Illustration of seismic waves",
+      hint: "seismic waves",
+    },
+  },
+  {
+    title: "Population Risk",
+    description: "Assess the risk to human populations in the affected areas.",
+    icon: <Building className="size-8 text-primary" />,
+    image: {
+      url: "https://picsum.photos/seed/population-risk/600/400",
+      alt: "City skyline at risk",
+      hint: "city skyline",
+    },
+  },
+  {
+    title: "Environmental Damage",
+    description: "Evaluate the long-term environmental consequences of an impact event.",
+    icon: <Leaf className="size-8 text-primary" />,
+    image: {
+      url: "https://picsum.photos/seed/environmental-damage/600/400",
+      alt: "Forest with a hazy sky",
+      hint: "forest haze",
+    },
+  },
+]
+
+
 export default function DashboardPage() {
   return (
-    <div className="space-y-8">
-      <PageHeader
-        title="Welcome to AyurBalance"
-        description="Your holistic solution for Ayurvedic diet management."
-        className="text-center"
-      />
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {features.map((feature) => (
-          <Link href={feature.href} key={feature.href} className="flex">
-            <Card className="flex flex-col w-full hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105">
+    <div className="space-y-12">
+      {/* Hero Section */}
+      <section className="text-center">
+        <PageHeader
+          title="Welcome to Meteor Madness"
+          description="Simulate asteroid impacts, analyze risks, and explore mitigation strategies with cutting-edge data."
+          className="items-center"
+        />
+        <Button asChild size="lg" className="mt-4">
+          <Link href="/simulation-tool">
+            Go to Simulation Tool
+            <ArrowRight className="ml-2 size-5" />
+          </Link>
+        </Button>
+      </section>
+
+      {/* Features Section */}
+      <section>
+        <h2 className="text-3xl font-headline text-center text-primary mb-8">Core Features</h2>
+        <div className="grid gap-6 md:grid-cols-3">
+          {features.map((feature) => (
+            <Card key={feature.title} className="text-center">
               <CardHeader>
-                {feature.image && (
-                   <Image
-                    src={feature.image.imageUrl}
-                    alt={feature.image.description}
-                    width={600}
-                    height={400}
-                    priority={feature.priority}
-                    data-ai-hint={feature.image.imageHint}
-                    className="rounded-lg aspect-video object-cover"
-                  />
-                )}
+                <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit">
+                   {feature.icon}
+                </div>
               </CardHeader>
-              <CardContent className="flex-grow">
+              <CardContent>
+                <CardTitle className="font-headline text-2xl">{feature.title}</CardTitle>
+                <CardDescription className="mt-2">{feature.description}</CardDescription>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Risk Factors Section */}
+      <section>
+        <h2 className="text-3xl font-headline text-center text-primary mb-8">Key Risk Factors</h2>
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {riskFactors.map((factor) => (
+            <Card key={factor.title} className="flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              <CardHeader className="p-0">
+                <Image
+                  src={factor.image.url}
+                  alt={factor.image.alt}
+                  width={600}
+                  height={400}
+                  data-ai-hint={factor.image.hint}
+                  className="aspect-video object-cover"
+                />
+              </CardHeader>
+              <CardContent className="flex-grow p-6">
                 <div className="flex items-start gap-4">
-                  {feature.icon}
+                  {factor.icon}
                   <div className="flex-1">
-                    <CardTitle className="font-headline text-2xl">{feature.title}</CardTitle>
-                    <CardDescription className="mt-1">{feature.description}</CardDescription>
+                    <CardTitle className="font-headline text-2xl">{factor.title}</CardTitle>
+                    <p className="mt-2 text-muted-foreground">{factor.description}</p>
                   </div>
                 </div>
               </CardContent>
-              <CardFooter>
-                 <Button variant="ghost" className="w-full justify-start text-primary hover:text-primary">
-                    <span>Go to {feature.title}</span>
-                    <ArrowRight className="ml-2 size-4" />
-                  </Button>
-              </CardFooter>
             </Card>
-          </Link>
-        ))}
-      </div>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }
