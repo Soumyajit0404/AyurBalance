@@ -37,40 +37,46 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 z-50">
-        <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2 text-lg font-semibold md:text-base"
-          >
-            <Logo className="h-6 w-6 text-primary" />
-            <span className="font-headline text-xl text-primary">AyurBalance</span>
-          </Link>
-          {menuItems.map((item) => (
-             <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "transition-colors hover:text-primary",
-                pathname === item.href ? "text-primary font-semibold" : "text-muted-foreground"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
+      <header className="sticky top-0 flex h-16 items-center border-b bg-background px-4 md:px-6 z-50">
+        
+        {/* Logo on the left */}
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 text-lg font-semibold"
+        >
+          <Logo className="h-6 w-6 text-primary" />
+          <span className="font-headline text-xl text-primary hidden sm:inline">AyurBalance</span>
+        </Link>
+        
+        {/* Centered Navigation for Desktop */}
+        <nav className="hidden md:flex flex-1 justify-center">
+          <div className="flex items-center gap-5 text-sm lg:gap-6">
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "transition-colors hover:text-primary hover:underline underline-offset-4 decoration-primary/50 decoration-2",
+                  "text-shadow-[0_0_8px_hsl(var(--primary)/0.3)] hover:text-shadow-[0_0_12px_hsl(var(--primary)/0.5)]",
+                  pathname === item.href ? "text-primary font-semibold" : "text-muted-foreground"
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
         </nav>
-        <div className="flex md:hidden">
+
+        {/* Mobile Navigation Dropdown (now on the right before UserNav) */}
+        <div className="flex md:hidden ml-auto">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                >
+                <Button variant="outline" size="icon">
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle navigation menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
+              <DropdownMenuContent align="end">
                  {menuItems.map((item) => (
                   <Link href={item.href} key={item.href}>
                     <DropdownMenuItem>
@@ -82,7 +88,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </DropdownMenuContent>
             </DropdownMenu>
         </div>
-        <div className="flex w-full items-center justify-end gap-4 md:ml-auto md:gap-2 lg:gap-4">
+        
+        {/* UserNav on the right */}
+        <div className="hidden md:flex items-center gap-4">
           <UserNav />
         </div>
       </header>

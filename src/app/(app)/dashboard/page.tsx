@@ -25,7 +25,7 @@ const features = [
     title: "Patient Profiles",
     description: "Manage patient demographics, health data, and dietary preferences.",
     href: "/patients",
-    icon: <Users className="size-8 text-accent" />,
+    icon: <Users className="size-8 text-primary" />,
     image: PlaceHolderImages.find((img) => img.id === 'dash-patients'),
     priority: true,
   },
@@ -33,28 +33,28 @@ const features = [
     title: "Food Database",
     description: "Browse foods with nutritional and Ayurvedic attributes.",
     href: "/food-database",
-    icon: <Carrot className="size-8 text-accent" />,
+    icon: <Carrot className="size-8 text-primary" />,
     image: PlaceHolderImages.find((img) => img.id === 'dash-food'),
   },
   {
     title: "AI Diet Plan Tool",
     description: "Generate personalized Ayurvedic diet plans based on patient data.",
     href: "/diet-plan-tool",
-    icon: <NotebookText className="size-8 text-accent" />,
+    icon: <NotebookText className="size-8 text-primary" />,
     image: PlaceHolderImages.find((img) => img.id === 'dash-diet'),
   },
   {
     title: "Recipe Analysis",
     description: "Analyze custom recipes for nutritional and Ayurvedic properties.",
     href: "/recipe-analysis",
-    icon: <Pipette className="size-8 text-accent" />,
+    icon: <Pipette className="size-8 text-primary" />,
     image: PlaceHolderImages.find((img) => img.id === 'dash-recipe'),
   },
   {
     title: "Natural Language Q&A",
     description: "Ask questions about diet and wellness using natural language.",
     href: "/q-and-a",
-    icon: <MessageCircleQuestion className="size-8 text-accent" />,
+    icon: <MessageCircleQuestion className="size-8 text-primary" />,
     image: PlaceHolderImages.find((img) => img.id === 'dash-q-and-a'),
   },
 ]
@@ -65,11 +65,12 @@ export default function DashboardPage() {
       <PageHeader
         title="Welcome to AyurBalance"
         description="Your holistic solution for Ayurvedic diet management."
+        className="text-center"
       />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {features.map((feature) => (
           <Link href={feature.href} key={feature.href} className="flex">
-            <Card className="flex flex-col w-full hover:border-primary transition-colors hover:shadow-lg">
+            <Card className="flex flex-col w-full hover:border-primary transition-all duration-300 hover:shadow-lg hover:scale-105">
               <CardHeader>
                 {feature.image && (
                    <Image
