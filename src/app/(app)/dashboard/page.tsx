@@ -1,12 +1,12 @@
 import Link from "next/link"
 import Image from "next/image"
 import {
-  Globe,
-  Activity,
-  ShieldCheck,
-  Building,
-  Mountain,
+  HeartPulse,
   Leaf,
+  BookOpen,
+  Wind,
+  Flame,
+  Mountain,
   ArrowRight,
 } from "lucide-react"
 import {
@@ -21,51 +21,51 @@ import { Button } from "@/components/ui/button"
 
 const features = [
   {
-    title: "Real-Time Data Integration",
-    description: "Track asteroids with live data from global observatories.",
-    icon: <Globe className="size-8 text-primary" />,
+    title: "Patient Management",
+    description: "Create and manage detailed profiles for your patients.",
+    icon: <HeartPulse className="size-8 text-primary" />,
   },
   {
-    title: "Impact Simulation",
-    description: "Model and visualize potential impact scenarios on a global scale.",
-    icon: <Activity className="size-8 text-primary" />,
+    title: "Food Database",
+    description: "Browse a comprehensive database of foods and their properties.",
+    icon: <Leaf className="size-8 text-primary" />,
   },
   {
-    title: "Mitigation Strategies",
-    description: "Explore and evaluate different strategies to prevent or reduce impact.",
-    icon: <ShieldCheck className="size-8 text-primary" />,
+    title: "AI Diet Plans",
+    description: "Generate personalized Ayurvedic diet plans with our AI tool.",
+    icon: <BookOpen className="size-8 text-primary" />,
   },
 ]
 
-const riskFactors = [
+const doshas = [
   {
-    title: "Seismic Effect",
-    description: "Analyze the potential for earthquakes and tsunamis following an impact.",
+    title: "Vata (Air & Ether)",
+    description: "Governs movement, creativity, and vitality. Prone to anxiety and dryness when imbalanced.",
+    icon: <Wind className="size-8 text-primary" />,
+    image: {
+      url: "https://picsum.photos/seed/vata-dosha/600/400",
+      alt: "Illustration of wind and flowing leaves",
+      hint: "wind leaves",
+    },
+  },
+  {
+    title: "Pitta (Fire & Water)",
+    description: "Controls digestion, metabolism, and intelligence. Imbalances can lead to inflammation and anger.",
+    icon: <Flame className="size-8 text-primary" />,
+    image: {
+      url: "https://picsum.photos/seed/pitta-dosha/600/400",
+      alt: "Illustration of a gentle flame",
+      hint: "gentle flame",
+    },
+  },
+  {
+    title: "Kapha (Earth & Water)",
+    description: "Provides structure, stability, and lubrication. Excess Kapha can cause lethargy and congestion.",
     icon: <Mountain className="size-8 text-primary" />,
     image: {
-      url: "https://picsum.photos/seed/seismic-effect/600/400",
-      alt: "Illustration of seismic waves",
-      hint: "seismic waves",
-    },
-  },
-  {
-    title: "Population Risk",
-    description: "Assess the risk to human populations in the affected areas.",
-    icon: <Building className="size-8 text-primary" />,
-    image: {
-      url: "https://picsum.photos/seed/population-risk/600/400",
-      alt: "City skyline at risk",
-      hint: "city skyline",
-    },
-  },
-  {
-    title: "Environmental Damage",
-    description: "Evaluate the long-term environmental consequences of an impact event.",
-    icon: <Leaf className="size-8 text-primary" />,
-    image: {
-      url: "https://picsum.photos/seed/environmental-damage/600/400",
-      alt: "Forest with a hazy sky",
-      hint: "forest haze",
+      url: "https://picsum.photos/seed/kapha-dosha/600/400",
+      alt: "Illustration of stable, earthy mountains",
+      hint: "earthy mountains",
     },
   },
 ]
@@ -77,13 +77,13 @@ export default function DashboardPage() {
       {/* Hero Section */}
       <section className="text-center">
         <PageHeader
-          title="Welcome to Meteor Madness"
-          description="Simulate asteroid impacts, analyze risks, and explore mitigation strategies with cutting-edge data."
+          title="Welcome to AyurBalance"
+          description="Your holistic solution for Ayurvedic diet management and patient wellness."
           className="items-center"
         />
         <Button asChild size="lg" className="mt-4">
-          <Link href="/simulation-tool">
-            Go to Simulation Tool
+          <Link href="/patients">
+            View Patients
             <ArrowRight className="ml-2 size-5" />
           </Link>
         </Button>
@@ -109,28 +109,28 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Risk Factors Section */}
+      {/* Doshas Section */}
       <section>
-        <h2 className="text-3xl font-headline text-center text-primary mb-8">Key Risk Factors</h2>
+        <h2 className="text-3xl font-headline text-center text-primary mb-8">Understanding the Doshas</h2>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {riskFactors.map((factor) => (
-            <Card key={factor.title} className="flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
+          {doshas.map((dosha) => (
+            <Card key={dosha.title} className="flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <CardHeader className="p-0">
                 <Image
-                  src={factor.image.url}
-                  alt={factor.image.alt}
+                  src={dosha.image.url}
+                  alt={dosha.image.alt}
                   width={600}
                   height={400}
-                  data-ai-hint={factor.image.hint}
+                  data-ai-hint={dosha.image.hint}
                   className="aspect-video object-cover"
                 />
               </CardHeader>
               <CardContent className="flex-grow p-6">
                 <div className="flex items-start gap-4">
-                  {factor.icon}
+                  {dosha.icon}
                   <div className="flex-1">
-                    <CardTitle className="font-headline text-2xl">{factor.title}</CardTitle>
-                    <p className="mt-2 text-muted-foreground">{factor.description}</p>
+                    <CardTitle className="font-headline text-2xl">{dosha.title}</CardTitle>
+                    <p className="mt-2 text-muted-foreground">{dosha.description}</p>
                   </div>
                 </div>
               </CardContent>
