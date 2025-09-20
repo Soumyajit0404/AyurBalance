@@ -27,6 +27,7 @@ const features = [
     href: "/patients",
     icon: <Users className="size-8 text-accent" />,
     image: PlaceHolderImages.find((img) => img.id === 'dash-patients'),
+    priority: true,
   },
   {
     title: "Food Database",
@@ -76,6 +77,7 @@ export default function DashboardPage() {
                     alt={feature.image.description}
                     width={600}
                     height={400}
+                    priority={feature.priority}
                     data-ai-hint={feature.image.imageHint}
                     className="rounded-lg aspect-video object-cover"
                   />

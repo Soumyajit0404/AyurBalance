@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Sparkles, Printer } from "lucide-react";
+import { Loader2, Sparkles, Printer, NotebookText } from "lucide-react";
 
 const formSchema = z.object({
   patientData: z.string().min(20, {
