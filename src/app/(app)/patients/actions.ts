@@ -1,8 +1,15 @@
-'use server';
+'use client';
 
-import { revalidatePath } from 'next/cache';
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  doc,
+  deleteDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { z } from 'zod';
-import { dbAdmin } from '@/lib/firebase-admin';
+import { db } from '@/lib/firebase-client';
 
 const PatientSchema = z.object({
   id: z.string().optional(),
@@ -18,10 +25,11 @@ const PatientSchema = z.object({
   notes: z.string().optional(),
 });
 
-export async function savePatient(formData: FormData) {
-  const values = Object.fromEntries(formData.entries());
+export async function savePatient(
+  values: z.infer<typeof PatientSchema>
+) {
   const validatedFields = PatientSchema.safeParse(values);
-  
+
   if (!validatedFields.success) {
     return {
       success: false,
@@ -34,20 +42,18 @@ export async function savePatient(formData: FormData) {
 
   try {
     if (id) {
-      // Update existing patient
-      await dbAdmin.collection('patients').doc(id).set({
+      const patientRef = doc(db, 'patients', id);
+      await updateDoc(patientRef, {
         ...patientData,
-        lastVisit: new Date(),
-      }, { merge: true });
+        lastVisit: serverTimestamp(),
+      });
     } else {
-      // Create new patient
-      await dbAdmin.collection('patients').add({
+      await addDoc(collection(db, 'patients'), {
         ...patientData,
-        createdAt: new Date(),
-        lastVisit: new Date(),
+        createdAt: serverTimestamp(),
+        lastVisit: serverTimestamp(),
       });
     }
-    revalidatePath('/patients');
     return { success: true };
   } catch (error) {
     console.error('Error saving patient:', error);
@@ -60,8 +66,7 @@ export async function deletePatient(patientId: string) {
     return { success: false, error: 'Patient ID is required.' };
   }
   try {
-    await dbAdmin.collection('patients').doc(patientId).delete();
-    revalidatePath('/patients');
+    await deleteDoc(doc(db, 'patients', patientId));
     return { success: true };
   } catch (error) {
     console.error('Error deleting patient:', error);

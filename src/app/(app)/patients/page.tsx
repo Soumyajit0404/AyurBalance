@@ -61,6 +61,8 @@ const doshaColors: { [key: string]: string } = {
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
   "Vata-Pitta":
     "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  "Vata-Kapha":
+    "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
   Tridoshic:
     "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
 };
@@ -82,15 +84,20 @@ export default function PatientsPage() {
         patientsData.push({
           id: doc.id,
           ...data,
-          lastVisit: data.lastVisit?.toDate ? data.lastVisit.toDate().toLocaleDateString() : data.lastVisit,
+          lastVisit: data.lastVisit?.toDate ? data.lastVisit.toDate().toLocaleDateString() : 'N/A',
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toLocaleDateString() : 'N/A',
         } as Patient);
       });
       setPatients(patientsData);
       setLoading(false);
+    }, (error) => {
+      console.error("Error fetching patients: ", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not fetch patient data." });
+      setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [toast]);
 
   const handleEdit = (patient: Patient) => {
     setSelectedPatient(patient);
@@ -103,8 +110,8 @@ export default function PatientsPage() {
   };
   
   const handleDeleteConfirm = async () => {
-    if (!selectedPatient) return;
-    const result = await deletePatient(selectedPatient.id!);
+    if (!selectedPatient || !selectedPatient.id) return;
+    const result = await deletePatient(selectedPatient.id);
     if (result.success) {
       toast({ title: "Patient deleted", description: `${selectedPatient.name} has been removed.` });
     } else {
@@ -129,7 +136,7 @@ export default function PatientsPage() {
       >
         <Sheet open={isSheetOpen} onOpenChange={handleSheetClose}>
           <SheetTrigger asChild>
-            <Button>
+            <Button onClick={() => setSheetOpen(true)}>
               <PlusCircle />
               New Patient
             </Button>
@@ -186,13 +193,13 @@ export default function PatientsPage() {
                     <Badge
                       variant="outline"
                       className={`${
-                        doshaColors[patient.dosha] || ""
+                        doshaColors[patient.dosha] || doshaColors['Tridoshic']
                       } border-transparent`}
                     >
                       {patient.dosha}
                     </Badge>
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell">{patient.lastVisit || 'N/A'}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{patient.lastVisit}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -219,6 +226,11 @@ export default function PatientsPage() {
             )}
           </TableBody>
         </Table>
+         { !loading && patients.length === 0 && (
+          <div className="text-center p-8 text-muted-foreground">
+            No patients found. Click "New Patient" to get started.
+          </div>
+        )}
       </div>
 
        <AlertDialog open={isAlertOpen} onOpenChange={setAlertOpen}>

@@ -1,6 +1,5 @@
 'use client';
 
-import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -84,14 +83,7 @@ export function PatientForm({ patient, onSuccess }: PatientFormProps) {
   }, [patient, form]);
 
   const onSubmit = async (values: z.infer<typeof PatientFormSchema>) => {
-    const formData = new FormData();
-    Object.entries(values).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-            formData.append(key, String(value));
-        }
-    });
-
-    const result = await savePatient(formData);
+    const result = await savePatient(values);
 
     if (result.success) {
       toast({
