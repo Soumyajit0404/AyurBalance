@@ -8,7 +8,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth } from "@/lib/firebase-client";
 import { Button } from "@/components/ui/button";
 import {
   Card,

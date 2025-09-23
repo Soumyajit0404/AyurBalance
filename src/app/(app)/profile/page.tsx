@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth.tsx";
 import { updateProfile } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { auth, storage } from "@/lib/firebase";
+import { auth, storage } from "@/lib/firebase-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
