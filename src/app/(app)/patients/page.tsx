@@ -1,4 +1,15 @@
-import { Button } from "@/components/ui/button"
+"use client";
+
+import { useState, useEffect } from "react";
+import {
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
+import { db } from "@/lib/firebase-client";
+import { Patient, PatientForm } from "./patient-form";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -6,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   Sheet,
   SheetContent,
@@ -14,85 +25,128 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
-import { Badge } from "@/components/ui/badge"
-import { PageHeader } from "@/components/page-header"
-import { PlusCircle, MoreHorizontal } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-
-const mockPatients = [
-  { id: "PAT001", name: "Ananya Sharma", age: 34, gender: "Female", dosha: "Pitta-Vata", lastVisit: "2023-10-15" },
-  { id: "PAT002", name: "Rohan Verma", age: 45, gender: "Male", dosha: "Kapha", lastVisit: "2023-10-12" },
-  { id: "PAT003", name: "Priya Singh", age: 28, gender: "Female", dosha: "Vata", lastVisit: "2023-10-18" },
-  { id: "PAT004", name: "Amit Patel", age: 52, gender: "Male", dosha: "Pitta", lastVisit: "2023-09-25" },
-  { id: "PAT005", name: "Sunita Gupta", age: 41, gender: "Female", dosha: "Kapha-Pitta", lastVisit: "2023-10-20" },
-];
+} from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/page-header";
+import { PlusCircle, MoreHorizontal } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+import { deletePatient } from "./actions";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const doshaColors: { [key: string]: string } = {
-  "Vata": "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  "Pitta": "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-  "Kapha": "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  "Pitta-Vata": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  "Kapha-Pitta": "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+  Vata: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+  Pitta: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+  Kapha: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  "Pitta-Vata":
+    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  "Kapha-Pitta":
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+  "Vata-Pitta":
+    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  Tridoshic:
+    "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
 };
 
-
 export default function PatientsPage() {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isSheetOpen, setSheetOpen] = useState(false);
+  const [isAlertOpen, setAlertOpen] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const q = query(collection(db, "patients"), orderBy("name"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const patientsData: Patient[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        patientsData.push({
+          id: doc.id,
+          ...data,
+          lastVisit: data.lastVisit?.toDate ? data.lastVisit.toDate().toLocaleDateString() : data.lastVisit,
+        } as Patient);
+      });
+      setPatients(patientsData);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleEdit = (patient: Patient) => {
+    setSelectedPatient(patient);
+    setSheetOpen(true);
+  };
+
+  const handleDeleteClick = (patient: Patient) => {
+    setSelectedPatient(patient);
+    setAlertOpen(true);
+  };
+  
+  const handleDeleteConfirm = async () => {
+    if (!selectedPatient) return;
+    const result = await deletePatient(selectedPatient.id!);
+    if (result.success) {
+      toast({ title: "Patient deleted", description: `${selectedPatient.name} has been removed.` });
+    } else {
+      toast({ variant: "destructive", title: "Error", description: result.error });
+    }
+    setAlertOpen(false);
+    setSelectedPatient(null);
+  };
+
+  const handleSheetClose = (open: boolean) => {
+    setSheetOpen(open);
+    if (!open) {
+      setSelectedPatient(null);
+    }
+  };
+
   return (
     <div className="space-y-8">
-      <PageHeader title="Patient Profiles" description="Manage your patients' information and diet plans.">
-        <Sheet>
+      <PageHeader
+        title="Patient Profiles"
+        description="Manage your patients' information and diet plans."
+      >
+        <Sheet open={isSheetOpen} onOpenChange={handleSheetClose}>
           <SheetTrigger asChild>
             <Button>
               <PlusCircle />
               New Patient
             </Button>
           </SheetTrigger>
-          <SheetContent>
+          <SheetContent className="sm:max-w-2xl">
             <SheetHeader>
-              <SheetTitle className="font-headline text-2xl text-primary">Add New Patient</SheetTitle>
+              <SheetTitle className="font-headline text-2xl text-primary">
+                {selectedPatient ? "Edit Patient" : "Add New Patient"}
+              </SheetTitle>
               <SheetDescription>
-                Fill in the details to create a new patient profile.
+                {selectedPatient ? "Update the patient's profile." : "Fill in the details to create a new patient profile."}
               </SheetDescription>
             </SheetHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Name
-                </Label>
-                <Input id="name" placeholder="Patient's full name" className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="age" className="text-right">
-                  Age
-                </Label>
-                <Input id="age" type="number" placeholder="Patient's age" className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="gender" className="text-right">
-                  Gender
-                </Label>
-                <Input id="gender" placeholder="e.g., Female, Male" className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="dosha" className="text-right">
-                  Dosha
-                </Label>
-                <Input id="dosha" placeholder="e.g., Vata, Pitta-Kapha" className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-1 items-center gap-2">
-                <Label htmlFor="notes">
-                  Initial Notes
-                </Label>
-                <Textarea id="notes" placeholder="Any initial observations or health details..." />
-              </div>
-            </div>
-             <div className="flex justify-end">
-                <Button type="submit">Save Patient</Button>
-            </div>
+            <PatientForm
+              patient={selectedPatient}
+              onSuccess={() => handleSheetClose(false)}
+            />
           </SheetContent>
         </Sheet>
       </PageHeader>
@@ -100,47 +154,89 @@ export default function PatientsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Patient ID</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Age</TableHead>
-              <TableHead>Gender</TableHead>
+              <TableHead className="hidden sm:table-cell">Age</TableHead>
+              <TableHead className="hidden sm:table-cell">Gender</TableHead>
               <TableHead>Dosha Type</TableHead>
-              <TableHead>Last Visit</TableHead>
-              <TableHead><span className="sr-only">Actions</span></TableHead>
+              <TableHead className="hidden lg:table-cell">Last Visit</TableHead>
+              <TableHead>
+                <span className="sr-only">Actions</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockPatients.map((patient) => (
-              <TableRow key={patient.id}>
-                <TableCell className="font-medium">{patient.id}</TableCell>
-                <TableCell>{patient.name}</TableCell>
-                <TableCell>{patient.age}</TableCell>
-                <TableCell>{patient.gender}</TableCell>
-                <TableCell>
-                  <Badge variant="outline" className={`${doshaColors[patient.dosha] || ''} border-transparent`}>{patient.dosha}</Badge>
-                </TableCell>
-                <TableCell>{patient.lastVisit}</TableCell>
-                <TableCell>
-                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>View Diet Plan</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
+            {loading ? (
+               Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                  <TableCell className="hidden sm:table-cell"><Skeleton className="h-5 w-10" /></TableCell>
+                  <TableCell className="hidden sm:table-cell"><Skeleton className="h-5 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
+                  <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-24" /></TableCell>
+                  <TableCell><Skeleton className="h-8 w-8" /></TableCell>
+                </TableRow>
+              ))
+            ) : (
+              patients.map((patient) => (
+                <TableRow key={patient.id}>
+                  <TableCell className="font-medium">{patient.name}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{patient.age}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{patient.gender}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className={`${
+                        doshaColors[patient.dosha] || ""
+                      } border-transparent`}
+                    >
+                      {patient.dosha}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell">{patient.lastVisit || 'N/A'}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button aria-haspopup="true" size="icon" variant="ghost">
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Toggle menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onSelect={() => handleEdit(patient)}>
+                          Edit Profile
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>View Diet Plan</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onSelect={() => handleDeleteClick(patient)} className="text-destructive">
+                          Delete Patient
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
+
+       <AlertDialog open={isAlertOpen} onOpenChange={setAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the patient record for {selectedPatient?.name}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
-  )
+  );
 }
