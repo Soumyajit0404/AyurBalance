@@ -15,15 +15,35 @@ const serviceAccount = {
 
 if (!admin.apps.length) {
   try {
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount as any),
-      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    });
+    // Check if essential service account details are present
+    if (serviceAccount.project_id) {
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount as any),
+        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      });
+    } else {
+        console.warn("Firebase admin initialization skipped: project_id is missing. Please set NEXT_PUBLIC_FIREBASE_PROJECT_ID environment variable.");
+    }
   } catch (error) {
     console.error('Firebase admin initialization error', error);
   }
 }
 
-export const dbAdmin = admin.firestore();
-export const authAdmin = admin.auth();
-export const storageAdmin = admin.storage().bucket();
+let dbAdmin: admin.firestore.Firestore, 
+    authAdmin: admin.auth.Auth, 
+    storageAdmin: admin.storage.Bucket;
+
+// Only export services if the app was initialized
+if (admin.apps.length > 0) {
+    dbAdmin = admin.firestore();
+    authAdmin = admin.auth();
+    storageAdmin = admin.storage().bucket();
+} else {
+    // Provide dummy objects to prevent app from crashing on import if initialization failed
+    dbAdmin = {} as admin.firestore.Firestore;
+    authAdmin = {} as admin.auth.Auth;
+    storageAdmin = {} as admin.storage.Bucket;
+}
+
+
+export { dbAdmin, authAdmin, storageAdmin };
