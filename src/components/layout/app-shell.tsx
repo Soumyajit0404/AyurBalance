@@ -1,3 +1,4 @@
+
 "use client"
 import * as React from 'react'
 import Link from 'next/link'
@@ -10,6 +11,7 @@ import {
   Pipette,
   Users,
   Menu,
+  Wrench,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -30,6 +32,7 @@ const menuItems = [
   { href: "/diet-plan-tool", label: "AI Diet Plan", icon: NotebookText },
   { href: "/recipe-analysis", label: "Recipe Analysis", icon: Pipette },
   { href: "/q-and-a", label: "Q&A", icon: MessageCircleQuestion },
+  { href: "/setup", label: "Setup", icon: Wrench },
 ]
 
 export function AppShell({ children }: { children: React.ReactNode }) {
