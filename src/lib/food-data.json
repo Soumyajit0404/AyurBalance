@@ -337,7 +337,7 @@
     { "name": "Barley Grass", "category": "Superfood", "calories": 20, "properties": "P-K-V+", "qualities": "Bitter, Sweet, Cooling" },
     { "name": "Goji Berry", "category": "Fruit", "calories": 349, "properties": "V-P-K-", "qualities": "Sweet" },
     { "name": "Acai Berry", "category": "Fruit", "calories": 70, "properties": "V-P-K-", "qualities": "Sour, Astringent, Oily" },
-    { "name": " Nutritional Yeast", "category": "Seasoning", "calories": 323, "properties": "V-P+K-", "qualities": "Salty, Umami" },
+    { "name": "Nutritional Yeast", "category": "Seasoning", "calories": 323, "properties": "V-P+K-", "qualities": "Salty, Umami" },
     { "name": "Bragg's Liquid Aminos", "category": "Seasoning", "calories": 0, "properties": "P+V-K+", "qualities": "Salty, Heating" },
     { "name": "Vinegar (Apple Cider)", "category": "Condiment", "calories": 22, "properties": "P+V+K-", "qualities": "Sour, Heating" },
     { "name": "Mustard (prepared)", "category": "Condiment", "calories": 143, "properties": "P+V+K-", "qualities": "Pungent, Sour, Heating" },
