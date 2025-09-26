@@ -6,6 +6,8 @@ import {
   onSnapshot,
   query,
   orderBy,
+  getDocs,
+  limit,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase-client";
 import { Patient, PatientForm } from "./patient-form";
@@ -26,6 +28,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/page-header";
 import { PlusCircle, MoreHorizontal } from "lucide-react";
@@ -50,6 +60,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { deletePatient } from "./actions";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const doshaColors: { [key: string]: string } = {
   Vata: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
@@ -72,7 +83,9 @@ export default function PatientsPage() {
   const [loading, setLoading] = useState(true);
   const [isSheetOpen, setSheetOpen] = useState(false);
   const [isAlertOpen, setAlertOpen] = useState(false);
+  const [isPlanDialogOpen, setPlanDialogOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [currentDietPlan, setCurrentDietPlan] = useState<{ plan: string; createdAt: string } | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -119,6 +132,32 @@ export default function PatientsPage() {
     }
     setAlertOpen(false);
     setSelectedPatient(null);
+  };
+
+  const handleViewPlan = async (patient: Patient) => {
+    if (!patient.id) return;
+    setSelectedPatient(patient);
+    
+    try {
+      const plansQuery = query(collection(db, 'patients', patient.id, 'dietPlans'), orderBy('createdAt', 'desc'), limit(1));
+      const querySnapshot = await getDocs(plansQuery);
+      
+      if (querySnapshot.empty) {
+        setCurrentDietPlan({ plan: "No diet plan found for this patient.", createdAt: "" });
+      } else {
+        const doc = querySnapshot.docs[0];
+        const data = doc.data();
+        setCurrentDietPlan({
+          plan: data.plan,
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString() : 'Date unknown',
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching diet plan: ", error);
+      setCurrentDietPlan({ plan: "Could not load diet plan.", createdAt: "" });
+    } finally {
+      setPlanDialogOpen(true);
+    }
   };
 
   const handleSheetClose = (open: boolean) => {
@@ -213,7 +252,7 @@ export default function PatientsPage() {
                         <DropdownMenuItem onSelect={() => handleEdit(patient)}>
                           Edit Profile
                         </DropdownMenuItem>
-                        <DropdownMenuItem>View Diet Plan</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => handleViewPlan(patient)}>View Diet Plan</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onSelect={() => handleDeleteClick(patient)} className="text-destructive">
                           Delete Patient
@@ -249,6 +288,25 @@ export default function PatientsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={isPlanDialogOpen} onOpenChange={setPlanDialogOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Diet Plan for {selectedPatient?.name}</DialogTitle>
+            <DialogDescription>
+              Most recent plan generated on: {currentDietPlan?.createdAt}
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-[60vh] my-4">
+             <div className="whitespace-pre-wrap font-body text-sm text-foreground p-4">
+                {currentDietPlan?.plan}
+              </div>
+          </ScrollArea>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPlanDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -23,6 +23,7 @@ const PatientSchema = z.object({
   waterIntake: z.string().optional(),
   allergies: z.string().optional(),
   notes: z.string().optional(),
+  dietPlans: z.array(z.any()).optional(),
 });
 
 export async function savePatient(
@@ -71,5 +72,27 @@ export async function deletePatient(patientId: string) {
   } catch (error) {
     console.error('Error deleting patient:', error);
     return { success: false, error: 'Failed to delete patient.' };
+  }
+}
+
+export async function saveDietPlanToPatient(patientId: string, dietPlan: string) {
+  if (!patientId || !dietPlan) {
+    return { success: false, error: 'Patient ID and diet plan are required.' };
+  }
+  try {
+    const dietPlanRef = collection(db, 'patients', patientId, 'dietPlans');
+    await addDoc(dietPlanRef, {
+      plan: dietPlan,
+      createdAt: serverTimestamp(),
+    });
+    // Also update the patient's last visit timestamp
+    const patientRef = doc(db, 'patients', patientId);
+    await updateDoc(patientRef, {
+      lastVisit: serverTimestamp(),
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Error saving diet plan:', error);
+    return { success: false, error: 'Failed to save diet plan.' };
   }
 }

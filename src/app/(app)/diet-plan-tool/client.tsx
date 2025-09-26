@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebase-client";
 import { generateAyurvedicDietPlan } from "@/ai/flows/generate-ayurvedic-diet-plan";
+import { saveDietPlanToPatient } from "@/app/(app)/patients/actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,9 +18,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Sparkles, Printer, NotebookText } from "lucide-react";
+import { Loader2, Sparkles, Printer, NotebookText, Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import type { Patient } from "@/app/(app)/patients/patient-form";
+
 
 const formSchema = z.object({
   patientData: z.string().min(20, {
@@ -27,8 +40,25 @@ const formSchema = z.object({
 
 export function DietPlanToolClient() {
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [dietPlan, setDietPlan] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const q = query(collection(db, "patients"), orderBy("name"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const patientsData: Patient[] = [];
+      querySnapshot.forEach((doc) => {
+        patientsData.push({ id: doc.id, ...doc.data() } as Patient);
+      });
+      setPatients(patientsData);
+    });
+    return () => unsubscribe();
+  }, []);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,6 +81,33 @@ export function DietPlanToolClient() {
       setLoading(false);
     }
   }
+
+  const handleSavePlan = async () => {
+    if (!selectedPatientId || !dietPlan) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please select a patient and generate a diet plan first.",
+      });
+      return;
+    }
+    setSaving(true);
+    const result = await saveDietPlanToPatient(selectedPatientId, dietPlan);
+    if (result.success) {
+      const patientName = patients.find(p => p.id === selectedPatientId)?.name;
+      toast({
+        title: "Plan Saved!",
+        description: `Diet plan has been saved to ${patientName}'s profile.`,
+      });
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Save Failed",
+        description: result.error,
+      });
+    }
+    setSaving(false);
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -128,6 +185,28 @@ export function DietPlanToolClient() {
               </div>
             )}
           </CardContent>
+           {dietPlan && (
+            <CardContent>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Select onValueChange={setSelectedPatientId} value={selectedPatientId || ''}>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Select patient to save plan" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {patients.map((patient) => (
+                      <SelectItem key={patient.id} value={patient.id!}>
+                        {patient.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button onClick={handleSavePlan} disabled={saving || !selectedPatientId}>
+                  {saving ? <Loader2 className="animate-spin" /> : <Save />}
+                  Save to Patient
+                </Button>
+              </div>
+            </CardContent>
+          )}
         </Card>
       </div>
     </div>
