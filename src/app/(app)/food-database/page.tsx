@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -20,6 +21,15 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 
 interface Food {
@@ -39,6 +49,7 @@ export default function FoodDatabasePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<RecommendFoodsForPatientOutput['recommendations'] | null>(null);
+  const [dbLoading, setDbLoading] = useState(true);
 
   useEffect(() => {
     const foodsQuery = query(collection(db, "foods"), orderBy("name"));
@@ -48,6 +59,7 @@ export default function FoodDatabasePage() {
         foodsData.push({ id: doc.id, ...doc.data() } as Food);
       });
       setFoods(foodsData);
+      setDbLoading(false);
     });
 
     const patientsQuery = query(collection(db, "patients"), orderBy("name"));
@@ -88,8 +100,7 @@ export default function FoodDatabasePage() {
       Allergies: ${patient.allergies || 'None'}.
     `;
     
-    // For large food lists, consider filtering before sending or using a more advanced retrieval method.
-    const foodListString = JSON.stringify(foods.map(f => ({ name: f.name, category: f.category, properties: f.properties, qualities: f.qualities })));
+    const foodListString = JSON.stringify(foods.map(f => ({ name: f.name, category: f.category, properties: f.properties, qualities: f.qualities, calories: f.calories })));
 
     try {
       const result = await recommendFoodsForPatient({
@@ -159,7 +170,7 @@ export default function FoodDatabasePage() {
         </CardContent>
       </Card>
 
-      <div className="mt-8">
+      <div className="mt-8 space-y-8">
         {loading && (
           <div className="flex flex-col items-center justify-center text-muted-foreground space-y-4 p-8">
              <Loader2 className="size-12 animate-spin text-primary" />
@@ -172,23 +183,30 @@ export default function FoodDatabasePage() {
            <div className="space-y-4">
              <h2 className="font-headline text-3xl text-primary">Recommended for {patients.find(p => p.id === selectedPatientId)?.name}</h2>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recommendations.map((rec) => (
-                <Card key={rec.name} className="flex flex-col">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Wheat className="text-primary"/>
-                      {rec.name}
-                    </CardTitle>
-                    <CardDescription>{rec.ayurvedicProperties}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                     <div className="flex items-start gap-3 text-sm">
-                       <BrainCircuit className="size-5 mt-1 shrink-0 text-primary/70" />
-                       <p className="text-muted-foreground">{rec.reasoning}</p>
-                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+              {recommendations.map((rec) => {
+                const foodDetails = foods.find(f => f.name === rec.name);
+                return (
+                  <Card key={rec.name} className="flex flex-col">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Wheat className="text-primary"/>
+                        {rec.name}
+                      </CardTitle>
+                      <CardDescription>
+                        <Badge variant="outline" className="mr-2">{foodDetails?.category}</Badge>
+                        <Badge variant="secondary">{foodDetails?.calories} kcal</Badge>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-grow space-y-4">
+                       <p className="text-sm font-semibold">{rec.ayurvedicProperties}</p>
+                       <div className="flex items-start gap-3 text-sm">
+                         <BrainCircuit className="size-5 mt-1 shrink-0 text-primary/70" />
+                         <p className="text-muted-foreground">{rec.reasoning}</p>
+                       </div>
+                    </CardContent>
+                  </Card>
+                )
+              })}
              </div>
            </div>
         )}
@@ -200,6 +218,50 @@ export default function FoodDatabasePage() {
                 <p className="mt-1 text-sm text-muted-foreground">Select a patient and search for a food to get started.</p>
             </div>
         )}
+
+        <div>
+            <h2 className="font-headline text-3xl text-primary mb-4">Full Food Database</h2>
+            <div className="border rounded-lg overflow-hidden">
+                <Table>
+                <TableHeader>
+                    <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Calories</TableHead>
+                    <TableHead>Ayurvedic Properties</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {dbLoading ? (
+                    Array.from({ length: 10 }).map((_, index) => (
+                        <TableRow key={index}>
+                        <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-16" /></TableCell>
+                        <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                        </TableRow>
+                    ))
+                    ) : (
+                    foods.map((food) => (
+                        <TableRow key={food.id}>
+                        <TableCell className="font-medium">{food.name}</TableCell>
+                        <TableCell>{food.category}</TableCell>
+                        <TableCell>{food.calories}</TableCell>
+                        <TableCell>
+                            <Badge variant="outline">{food.properties}</Badge>
+                        </TableCell>
+                        </TableRow>
+                    ))
+                    )}
+                </TableBody>
+                </Table>
+                {!dbLoading && foods.length === 0 && (
+                    <div className="text-center p-8 text-muted-foreground">
+                        No food data found. Go to the 'Setup' page to populate the database.
+                    </div>
+                )}
+            </div>
+        </div>
       </div>
     </div>
   )

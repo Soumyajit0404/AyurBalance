@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Recommends foods for a patient based on their profile and a search query.
@@ -25,7 +26,7 @@ const FoodRecommendationSchema = z.object({
 const RecommendFoodsForPatientInputSchema = z.object({
   patientProfile: z.string().describe('A summary of the patient\'s profile, including age, gender, dosha, health conditions, weight, and height.'),
   searchQuery: z.string().describe('The user\'s search query for a food type or name.'),
-  foodList: z.string().describe('A JSON string of available food items to consider for recommendations.')
+  foodList: z.string().describe('A JSON string of available food items to consider for recommendations. Each item includes name, category, properties, qualities, and calories.')
 });
 export type RecommendFoodsForPatientInput = z.infer<
   typeof RecommendFoodsForPatientInputSchema
@@ -54,7 +55,7 @@ const prompt = ai.definePrompt({
 
 A user is searching for foods for a specific patient. Based on the patient's profile and their search query, recommend up to 5 suitable food items from the provided list.
 
-For each recommendation, provide a clear and concise reason why it is beneficial for this particular patient, considering their dosha, health parameters (like weight and height), and Ayurvedic principles.
+For each recommendation, provide a clear and concise reason why it is beneficial for this particular patient, considering their dosha, health parameters, and Ayurvedic principles. Also include the food's Ayurvedic properties.
 
 Patient Profile:
 {{{patientProfile}}}
