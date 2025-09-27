@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -76,9 +77,13 @@ export default function FoodDatabasePage() {
         foodProperties: food.properties,
       });
       setAnalysis(result.detailedAnalysis);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      setAnalysis("Could not retrieve detailed analysis for this food.");
+      if (e.message && e.message.includes("503")) {
+        setAnalysis("The AI service is temporarily unavailable. Please try again in a few moments.");
+      } else {
+        setAnalysis("Could not retrieve detailed analysis for this food.");
+      }
     } finally {
       setAnalysisLoading(false);
     }
