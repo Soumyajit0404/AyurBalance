@@ -153,11 +153,12 @@ export default function FoodDatabasePage() {
               {selectedFood?.name}
             </DialogTitle>
             <DialogDescription className="pt-2">
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="mr-2">{selectedFood?.category}</Badge>
-                  <Badge variant="secondary">{selectedFood?.calories} kcal (approx.)</Badge>
-                </div>
+              Detailed analysis of this food item.
             </DialogDescription>
+            <div className="flex flex-wrap gap-2 pt-2">
+              <Badge variant="outline">{selectedFood?.category}</Badge>
+              <Badge variant="secondary">{selectedFood?.calories} kcal (approx.)</Badge>
+            </div>
           </DialogHeader>
           <ScrollArea className="max-h-[60vh] my-4 pr-4">
              {analysisLoading && (
