@@ -83,6 +83,10 @@ export default function FoodDatabasePage() {
     }
   };
 
+  const formatAnalysis = (text: string) => {
+    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/(\r\n|\n|\r)/gm, "<br />");
+  }
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -143,16 +147,16 @@ export default function FoodDatabasePage() {
           <DialogHeader>
             <DialogTitle className="font-headline text-3xl text-primary flex items-center gap-3">
                <Image
-                  src={`https://picsum.photos/seed/${selectedFood?.name}/100/100`}
+                  src={`https://picsum.photos/seed/${selectedFood?.name.replace(/\s/g, '-')}/100/100`}
                   alt={selectedFood?.name || 'Food'}
                   width={60}
                   height={60}
                   className="rounded-md"
-                  data-ai-hint={selectedFood?.name}
+                  data-ai-hint={selectedFood?.name.toLowerCase()}
                 />
               {selectedFood?.name}
             </DialogTitle>
-            <DialogDescription className="pt-2">
+            <DialogDescription>
               Detailed analysis of this food item.
             </DialogDescription>
             <div className="flex flex-wrap gap-2 pt-2">
@@ -170,7 +174,7 @@ export default function FoodDatabasePage() {
             {analysis && (
               <div
                 className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap font-body text-foreground"
-                dangerouslySetInnerHTML={{ __html: analysis.replace(/(\r\n|\n|\r)/gm, "<br>").replace(/\\*\\*/g, "") }}
+                dangerouslySetInnerHTML={{ __html: formatAnalysis(analysis) }}
               />
             )}
           </ScrollArea>
