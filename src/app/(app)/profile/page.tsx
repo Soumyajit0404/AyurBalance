@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth.tsx";
-import { updateProfile } from "firebase/auth";
+import { updateProfile, User } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, storage } from "@/lib/firebase-client";
 import { Button } from "@/components/ui/button";
@@ -45,8 +45,10 @@ const mockProgressData = [
 ];
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user: authUser } = useAuth();
   const { toast } = useToast();
+  
+  const [user, setUser] = useState<User | null>(authUser);
   const [displayName, setDisplayName] = useState(user?.displayName || "");
   const [title, setTitle] = useState("Ayurveda Enthusiast"); // Mock title
   const [loading, setLoading] = useState(false);
@@ -57,6 +59,10 @@ export default function ProfilePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isCapturing, setIsCapturing] = useState(false);
 
+  useEffect(() => {
+    setUser(authUser);
+    setDisplayName(authUser?.displayName || "");
+  }, [authUser]);
 
   useEffect(() => {
     const getCameraPermission = async () => {
@@ -86,6 +92,7 @@ export default function ProfilePage() {
     setLoading(true);
     try {
       await updateProfile(auth.currentUser, { displayName });
+      setUser({ ...auth.currentUser }); // Update local state
       // Here you would also save the 'title' to your database
       toast({ title: "Profile Updated", description: "Your changes have been saved." });
     } catch (error: any) {
@@ -129,9 +136,8 @@ export default function ProfilePage() {
       await uploadBytes(storageRef, file);
       const photoURL = await getDownloadURL(storageRef);
       await updateProfile(auth.currentUser, { photoURL });
+      setUser({ ...auth.currentUser }); // Update local state to reflect new photoURL
       toast({ title: "Profile Picture Updated", description: "Your new picture is now live." });
-      // Force a re-render or state update to show new image
-      window.location.reload(); 
     } catch (error: any) {
       toast({ variant: "destructive", title: "Upload Failed", description: error.message });
     } finally {
