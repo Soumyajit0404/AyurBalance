@@ -133,7 +133,7 @@ export default function FoodDatabasePage() {
           <div className="text-center p-16 border-2 border-dashed rounded-lg">
               <Info className="mx-auto size-12 text-muted-foreground" />
               <h3 className="mt-4 text-lg font-medium text-muted-foreground">No food found.</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Try adjusting your search term.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Try adjusting your search term or check if data has been uploaded in the Setup page.</p>
           </div>
         )}
       </div>
