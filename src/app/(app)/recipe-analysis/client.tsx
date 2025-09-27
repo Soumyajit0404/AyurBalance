@@ -59,18 +59,12 @@ export function RecipeAnalysisClient() {
 
   const formatText = (text: string) => {
     return text
-      .split('\n') // Split the text into an array of lines
-      .map(line => line.trim()) // Trim whitespace from each line
-      .filter(line => line.length > 0) // Remove empty lines
-      .map(line => {
-        // If a line starts with a bullet point marker, make it a bold paragraph
-        if (line.startsWith('* ') || line.startsWith('- ')) {
-          return `<p><strong>${line.substring(2)}</strong></p>`;
-        }
-        // Keep other lines as regular paragraphs
-        return `<p>${line}</p>`;
-      })
-      .join(''); // Join the lines back together
+      .replace(/^\s*[\*\-]\s*/gm, '') // Remove bullet points
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Make keys bold
+      .split('\n')
+      .filter(line => line.trim() !== '')
+      .map(line => `<p>${line}</p>`)
+      .join('');
   };
 
 
@@ -161,7 +155,7 @@ export function RecipeAnalysisClient() {
                   <AccordionTrigger>Nutritional Analysis</AccordionTrigger>
                   <AccordionContent>
                     <div 
-                      className="prose prose-sm dark:prose-invert max-w-none font-body text-foreground"
+                      className="prose prose-sm dark:prose-invert max-w-none font-body text-foreground space-y-2"
                       dangerouslySetInnerHTML={{ __html: formatText(analysis.nutritionalAnalysis) }} 
                     />
                   </AccordionContent>
@@ -170,7 +164,7 @@ export function RecipeAnalysisClient() {
                   <AccordionTrigger>Ayurvedic Analysis</AccordionTrigger>
                   <AccordionContent>
                     <div 
-                      className="prose prose-sm dark:prose-invert max-w-none font-body text-foreground"
+                      className="prose prose-sm dark:prose-invert max-w-none font-body text-foreground space-y-2"
                       dangerouslySetInnerHTML={{ __html: formatText(analysis.ayurvedicAnalysis) }} 
                     />
                   </AccordionContent>

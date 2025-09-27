@@ -49,10 +49,16 @@ Recipe Name: {{{recipeName}}}
 Ingredients: {{{ingredients}}}
 Instructions: {{{instructions}}}
 
-Provide a detailed nutritional analysis and an Ayurvedic analysis. For both sections, you MUST use bullet points (e.g., * point) to list out the key information. Do not write in long paragraphs.
+For both the Nutritional and Ayurvedic analysis sections, you MUST follow this format for each point:
+*   **Point Name**: Brief description of the point on the same line.
 
-The nutritional analysis should cover macronutrients and micronutrients.
-The Ayurvedic analysis should cover the effects on each dosha (Vata, Pitta, Kapha) and any potential imbalances.
+Example:
+*   **Macronutrients**: Contains a balanced profile of carbohydrates, proteins, and fats.
+
+Do not write in long paragraphs. Be concise.
+
+The nutritional analysis should cover key nutrients.
+The Ayurvedic analysis should cover its qualities and effects on the Vata, Pitta, and Kapha doshas.
 `,
 });
 
