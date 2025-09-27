@@ -34,7 +34,8 @@ export default function SetupPage() {
         const foodBatch = foods.slice(start, end);
 
         foodBatch.forEach((food) => {
-          const docRef = doc(collection(db, "foods"));
+          // Use food.name as the document ID to prevent duplicates
+          const docRef = doc(db, "foods", food.name);
           batch.set(docRef, food);
         });
 
@@ -45,7 +46,7 @@ export default function SetupPage() {
 
       toast({
         title: "Upload Successful!",
-        description: `${foods.length} food items have been added to your Firestore database.`,
+        description: `${foods.length} food items have been created or updated in your database.`,
       });
     } catch (error) {
       console.error("Error uploading food data: ", error);
@@ -69,8 +70,8 @@ export default function SetupPage() {
         <CardHeader>
           <CardTitle>Food Database Population</CardTitle>
           <CardDescription>
-            Click the button below to upload over 500 food items to your 'foods' collection in Firestore.
-            This is a one-time operation.
+            Click the button below to upload over 700 food items to your 'foods' collection in Firestore.
+            You can run this multiple times; it will update existing items and add new ones without creating duplicates.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -78,7 +79,7 @@ export default function SetupPage() {
             <Terminal className="h-4 w-4" />
             <AlertTitle>Important Note</AlertTitle>
             <AlertDescription>
-              This process will add documents to your Firestore database. Ensure you have the correct Firebase project configured. This action cannot be undone easily.
+              This process will add/update documents in your Firestore 'foods' collection. If you have duplicate items from a previous upload, please delete the collection in your Firebase console before running this again.
             </AlertDescription>
           </Alert>
 
