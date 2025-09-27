@@ -165,9 +165,10 @@ export default function FoodDatabasePage() {
                 </div>
              )}
             {analysis && (
-                <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap font-body text-foreground"
-                    dangerouslySetInnerHTML={{ __html: analysis.replace(/(\r\n|\n|\r)/gm, "<br>") }}
-                />
+              <div
+                className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap font-body text-foreground"
+                dangerouslySetInnerHTML={{ __html: analysis.replace(/(\r\n|\n|\r)/gm, "<br>").replace(/\\*\\*/g, "") }}
+              />
             )}
           </ScrollArea>
         </DialogContent>
