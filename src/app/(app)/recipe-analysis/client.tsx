@@ -63,15 +63,12 @@ export function RecipeAnalysisClient() {
       .replace(/^##\s(.*?)$/gm, '<h3 class="text-lg font-bold mt-3 mb-1">$1</h3>')
       .replace(/^###\s(.*?)$/gm, '<h4 class="text-md font-bold mt-2 mb-1">$1</h4>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/^\*\s(.*?)$/gm, '<li>$1</li>')
-      .replace(/^\s*\-\s(.*?)$/gm, '<li>$1</li>')
-      .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-      .replace(/<li>(.*?)<ul>/gs, '<li>$1<ul class="pl-4">')
-      .replace(/<\/ul>\n<ul>/gs, '')
+      .replace(/^\*\s(.*?)$/gm, '<p><strong>$1</strong></p>')
+      .replace(/^\s*\-\s(.*?)$/gm, '<p><strong>$1</strong></p>')
       .replace(/(\r\n|\n|\r)/gm, "<br />")
-      .replace(/<br \/>\n*<br \/>/gm, '<br />')
-      .replace(/<ul><br \/>/g, '<ul>')
-      .replace(/<br \/>\s*<\/ul>/g, '</ul>');
+      .replace(/<br \/>\s*<br \/>/g, '<br />')
+      .replace(/<p><strong>/g, '<div><strong>')
+      .replace(/<\/strong><\/p>/g, '</strong></div>');
   };
 
 
