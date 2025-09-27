@@ -43,16 +43,15 @@ Analyze the food item "{{foodName}}".
 
 Known Ayurvedic properties are: "{{foodProperties}}".
 
-Provide a detailed analysis covering the following points in a clear, well-structured format. Use Markdown for formatting (headings and bullet points).
+Provide a concise analysis covering the following points. Use Markdown for formatting. Keep descriptions to one or two lines per point.
 
-1.  **Nutritional Profile**: Briefly list the key nutrients, vitamins, and minerals.
-2.  **Ayurvedic Analysis**:
-    *   **Rasa (Taste)**: Describe its primary tastes from the 6 tastes (sweet, sour, salty, pungent, bitter, astringent).
-    *   **Guna (Qualities)**: List its main qualities (e.g., heavy/light, oily/dry, soft/hard, hot/cold).
-    *   **Virya (Potency)**: State its heating or cooling effect on the body.
-    *   **Vipaka (Post-digestive effect)**: Describe its effect after digestion (sweet, sour, or pungent).
-    *   **Prabhava (Unique effect)**: Mention any special action not explained by its other properties. If none, state that.
-    *   **Dosha Impact**: Explain in detail how it pacifies or aggravates Vata, Pitta, and Kapha doshas.
+*   **Nutritional Profile**: Briefly list the key nutrients.
+*   **Rasa (Taste)**: Describe its primary tastes.
+*   **Guna (Qualities)**: List its main qualities.
+*   **Virya (Potency)**: State its heating or cooling effect.
+*   **Vipaka (Post-digestive effect)**: Describe its effect after digestion.
+*   **Prabhava (Unique effect)**: Mention any special action, or state "None".
+*   **Dosha Impact**: Explain how it pacifies or aggravates Vata, Pitta, and Kapha.
 
 Return this information in the 'detailedAnalysis' field.
 `,
