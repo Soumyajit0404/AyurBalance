@@ -57,18 +57,14 @@ export function RecipeAnalysisClient() {
     }
   }
 
-  const formatText = (text: string) => {
+    const formatText = (text: string) => {
     return text
       .replace(/^#\s(.*?)$/gm, '<h2 class="text-xl font-bold mt-4 mb-2">$1</h2>')
       .replace(/^##\s(.*?)$/gm, '<h3 class="text-lg font-bold mt-3 mb-1">$1</h3>')
       .replace(/^###\s(.*?)$/gm, '<h4 class="text-md font-bold mt-2 mb-1">$1</h4>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/^\*\s(.*?)$/gm, '<p><strong>$1</strong></p>')
-      .replace(/^\s*\-\s(.*?)$/gm, '<p><strong>$1</strong></p>')
-      .replace(/(\r\n|\n|\r)/gm, "<br />")
-      .replace(/<br \/>\s*<br \/>/g, '<br />')
-      .replace(/<p><strong>/g, '<div><strong>')
-      .replace(/<\/strong><\/p>/g, '</strong></div>');
+      .replace(/^\s*[\*\-]\s(.*)$/gm, '<p><strong>$1</strong></p>')
+      .replace(/(\r\n|\n|\r)/gm, "");
   };
 
 
