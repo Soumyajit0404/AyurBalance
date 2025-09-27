@@ -22,10 +22,10 @@ export type AnalyzeRecipeAyurvedicPropertiesInput = z.infer<
 const AnalyzeRecipeAyurvedicPropertiesOutputSchema = z.object({
   nutritionalAnalysis: z
     .string()
-    .describe('Detailed nutritional analysis of the recipe.'),
+    .describe('Detailed nutritional analysis of the recipe, presented in bullet points.'),
   ayurvedicAnalysis: z
     .string()
-    .describe('Detailed Ayurvedic analysis of the recipe, including dosha effects.'),
+    .describe('Detailed Ayurvedic analysis of the recipe, including dosha effects, presented in bullet points.'),
 });
 export type AnalyzeRecipeAyurvedicPropertiesOutput = z.infer<
   typeof AnalyzeRecipeAyurvedicPropertiesOutputSchema
@@ -49,8 +49,10 @@ Recipe Name: {{{recipeName}}}
 Ingredients: {{{ingredients}}}
 Instructions: {{{instructions}}}
 
-Provide a detailed nutritional analysis, including macronutrient and micronutrient content.
-Then, provide an Ayurvedic analysis, including the effects on each dosha (Vata, Pitta, Kapha) and any potential imbalances it may cause.
+Provide a detailed nutritional analysis and an Ayurvedic analysis. For both sections, you MUST use bullet points (e.g., * point) to list out the key information. Do not write in long paragraphs.
+
+The nutritional analysis should cover macronutrients and micronutrients.
+The Ayurvedic analysis should cover the effects on each dosha (Vata, Pitta, Kapha) and any potential imbalances.
 `,
 });
 
