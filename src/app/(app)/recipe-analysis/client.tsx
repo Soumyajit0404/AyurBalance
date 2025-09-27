@@ -58,48 +58,20 @@ export function RecipeAnalysisClient() {
   }
 
   const formatText = (text: string) => {
-    // Process headers and bold text
-    let html = text
+    return text
       .replace(/^#\s(.*?)$/gm, '<h2 class="text-xl font-bold mt-4 mb-2">$1</h2>')
       .replace(/^##\s(.*?)$/gm, '<h3 class="text-lg font-bold mt-3 mb-1">$1</h3>')
       .replace(/^###\s(.*?)$/gm, '<h4 class="text-md font-bold mt-2 mb-1">$1</h4>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-    // Process bullet points
-    const lines = html.split('\n');
-    let inList = false;
-    html = lines.map(line => {
-      const isListItem = line.trim().startsWith('* ') || line.trim().startsWith('- ');
-      let lineHtml = line.replace(/^\s*[\*\-]\s/, '');
-
-      if (isListItem) {
-        if (!inList) {
-          inList = true;
-          return '<ul><li>' + lineHtml + '</li>';
-        }
-        return '<li>' + lineHtml + '</li>';
-      } else {
-        if (inList) {
-          inList = false;
-          return '</ul>' + lineHtml;
-        }
-        return lineHtml;
-      }
-    }).join('<br />');
-
-    if (inList) {
-      html += '</ul>';
-    }
-
-    // Clean up extra line breaks around lists
-    html = html.replace(/<br \/>\s*<ul>/g, '<ul>');
-    html = html.replace(/<\/ul>\s*<br \/>/g, '</ul>');
-    html = html.replace(/<li><br \/>/g, '<li>');
-    html = html.replace(/<br \/>\s*<\/li>/g, '</li>');
-    // Consolidate multiple breaks
-    html = html.replace(/(<br \s*\/?>\s*)+/g, '<br />');
-
-    return html;
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^\*\s(.*?)$/gm, '<li>$1</li>')
+      .replace(/^\s*\-\s(.*?)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+      .replace(/<li>(.*?)<ul>/gs, '<li>$1<ul class="pl-4">')
+      .replace(/<\/ul>\n<ul>/gs, '')
+      .replace(/(\r\n|\n|\r)/gm, "<br />")
+      .replace(/<br \/>\n*<br \/>/gm, '<br />')
+      .replace(/<ul><br \/>/g, '<ul>')
+      .replace(/<br \/>\s*<\/ul>/g, '</ul>');
   };
 
 
