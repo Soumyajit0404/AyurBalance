@@ -34,8 +34,9 @@ export default function SetupPage() {
         const foodBatch = foods.slice(start, end);
 
         foodBatch.forEach((food) => {
-          // Use food.name as the document ID to prevent duplicates
-          const docRef = doc(db, "foods", food.name);
+          // Sanitize food name for use as a document ID
+          const docId = food.name.replace(/\//g, '-');
+          const docRef = doc(db, "foods", docId);
           batch.set(docRef, food);
         });
 
@@ -79,7 +80,7 @@ export default function SetupPage() {
             <Terminal className="h-4 w-4" />
             <AlertTitle>Important Note</AlertTitle>
             <AlertDescription>
-              This process will add/update documents in your Firestore 'foods' collection. If you have duplicate items from a previous upload, please delete the collection in your Firebase console before running this again.
+              This process will add/update documents in your Firestore 'foods' collection. If you have duplicate or invalid items from a previous upload, please delete the entire 'foods' collection in your Firebase console before running this again.
             </AlertDescription>
           </Alert>
 

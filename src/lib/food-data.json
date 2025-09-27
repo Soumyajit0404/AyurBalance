@@ -522,7 +522,7 @@
     { "name": "Worcestershire Sauce", "category": "Condiment", "calories": 78, "properties": "P+K+V-", "qualities": "Salty, Sour, Pungent" },
     { "name": "Soy Sauce", "category": "Condiment", "calories": 53, "properties": "P+K+V-", "qualities": "Salty" },
     { "name": "Tamari", "category": "Condiment", "calories": 60, "properties": "P+K+V-", "qualities": "Salty" },
-    { "name": "Marmite/Vegemite", "category": "Condiment", "calories": 260, "properties": "V+P+K-", "qualities": "Extremely Salty, Umami" },
+    { "name": "Marmite or Vegemite", "category": "Condiment", "calories": 260, "properties": "V+P+K-", "qualities": "Extremely Salty, Umami" },
     { "name": "Fish Sauce", "category": "Condiment", "calories": 40, "properties": "P+K+V-", "qualities": "Salty, Pungent" },
     { "name": "Oyster Sauce", "category": "Condiment", "calories": 51, "properties": "P+K+V-", "qualities": "Salty, Sweet" },
     { "name": "Hoisin Sauce", "category": "Condiment", "calories": 225, "properties": "P+K+V-", "qualities": "Sweet, Salty" },
