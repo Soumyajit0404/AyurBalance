@@ -56,12 +56,16 @@ export function QAndAClient() {
         content: result.answer,
       };
       setMessages((prev) => [...prev.slice(0, -1), assistantMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching answer:", error);
+      let errorMessageContent = "Sorry, I encountered an error. Please try again.";
+      if (error.message && error.message.includes("503")) {
+        errorMessageContent = "The AI service is temporarily unavailable. Please try again in a few moments.";
+      }
       const errorMessage: Message = {
         id: Date.now() + 2,
         role: "assistant",
-        content: "Sorry, I encountered an error. Please try again.",
+        content: errorMessageContent,
       };
       setMessages((prev) => [...prev.slice(0, -1), errorMessage]);
     }
