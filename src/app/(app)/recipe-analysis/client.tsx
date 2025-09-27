@@ -57,14 +57,20 @@ export function RecipeAnalysisClient() {
     }
   }
 
-    const formatText = (text: string) => {
+  const formatText = (text: string) => {
     return text
-      .replace(/^#\s(.*?)$/gm, '<h2 class="text-xl font-bold mt-4 mb-2">$1</h2>')
-      .replace(/^##\s(.*?)$/gm, '<h3 class="text-lg font-bold mt-3 mb-1">$1</h3>')
-      .replace(/^###\s(.*?)$/gm, '<h4 class="text-md font-bold mt-2 mb-1">$1</h4>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/^\s*[\*\-]\s(.*)$/gm, '<p><strong>$1</strong></p>')
-      .replace(/(\r\n|\n|\r)/gm, "");
+      .split('\n') // Split the text into an array of lines
+      .map(line => line.trim()) // Trim whitespace from each line
+      .filter(line => line.length > 0) // Remove empty lines
+      .map(line => {
+        // If a line starts with a bullet point marker, make it a bold paragraph
+        if (line.startsWith('* ') || line.startsWith('- ')) {
+          return `<p><strong>${line.substring(2)}</strong></p>`;
+        }
+        // Keep other lines as regular paragraphs
+        return `<p>${line}</p>`;
+      })
+      .join(''); // Join the lines back together
   };
 
 
