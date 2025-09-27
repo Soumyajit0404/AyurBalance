@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -55,6 +56,23 @@ export function RecipeAnalysisClient() {
       setLoading(false);
     }
   }
+
+  const formatText = (text: string) => {
+    return text
+      .replace(/^#\s(.*?)$/gm, '<h2 class="text-xl font-bold mt-4 mb-2">$1</h2>')
+      .replace(/^##\s(.*?)$/gm, '<h3 class="text-lg font-bold mt-3 mb-1">$1</h3>')
+      .replace(/^###\s(.*?)$/gm, '<h4 class="text-md font-bold mt-2 mb-1">$1</h4>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^\*\s(.*?)$/gm, '<li>$1</li>')
+      .replace(/^\s*\-\s(.*?)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+      .replace(/<li>(.*?)<ul>/gs, '<li>$1<ul class="pl-4">')
+      .replace(/<\/ul>\n<ul>/gs, '')
+      .replace(/(\r\n|\n|\r)/gm, "<br />")
+      .replace(/<br \/>\n*<br \/>/gm, '<br />')
+      .replace(/<ul><br \/>/g, '<ul>')
+      .replace(/<br \/>\s*<\/ul>/g, '</ul>');
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -142,13 +160,19 @@ export function RecipeAnalysisClient() {
                 <AccordionItem value="nutritional">
                   <AccordionTrigger>Nutritional Analysis</AccordionTrigger>
                   <AccordionContent>
-                    <div className="whitespace-pre-wrap font-body text-foreground">{analysis.nutritionalAnalysis}</div>
+                    <div 
+                      className="prose prose-sm dark:prose-invert max-w-none font-body text-foreground"
+                      dangerouslySetInnerHTML={{ __html: formatText(analysis.nutritionalAnalysis) }} 
+                    />
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="ayurvedic">
                   <AccordionTrigger>Ayurvedic Analysis</AccordionTrigger>
                   <AccordionContent>
-                    <div className="whitespace-pre-wrap font-body text-foreground">{analysis.ayurvedicAnalysis}</div>
+                    <div 
+                      className="prose prose-sm dark:prose-invert max-w-none font-body text-foreground"
+                      dangerouslySetInnerHTML={{ __html: formatText(analysis.ayurvedicAnalysis) }} 
+                    />
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

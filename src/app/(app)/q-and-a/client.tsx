@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -65,6 +66,23 @@ export function QAndAClient() {
       setMessages((prev) => [...prev.slice(0, -1), errorMessage]);
     }
   };
+  
+  const formatText = (text: string) => {
+    return text
+      .replace(/^#\s(.*?)$/gm, '<h2 class="text-xl font-bold mt-4 mb-2">$1</h2>')
+      .replace(/^##\s(.*?)$/gm, '<h3 class="text-lg font-bold mt-3 mb-1">$1</h3>')
+      .replace(/^###\s(.*?)$/gm, '<h4 class="text-md font-bold mt-2 mb-1">$1</h4>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^\*\s(.*?)$/gm, '<li>$1</li>')
+      .replace(/^\s*\-\s(.*?)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+      .replace(/<li>(.*?)<ul>/gs, '<li>$1<ul class="pl-4">')
+      .replace(/<\/ul>\n<ul>/gs, '')
+      .replace(/(\r\n|\n|\r)/gm, "<br />")
+      .replace(/<br \/>\n*<br \/>/gm, '<br />')
+      .replace(/<ul><br \/>/g, '<ul>')
+      .replace(/<br \/>\s*<\/ul>/g, '</ul>');
+  };
 
   return (
     <div className="flex flex-col flex-1 mt-8 bg-card border rounded-lg shadow-sm">
@@ -93,7 +111,7 @@ export function QAndAClient() {
               )}
               <div
                 className={cn(
-                  "max-w-md rounded-lg px-4 py-3",
+                  "max-w-md rounded-lg px-4 py-3 prose prose-sm dark:prose-invert max-w-none font-body",
                   message.role === "user"
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted",
@@ -103,7 +121,7 @@ export function QAndAClient() {
                 {message.role === "loading" ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                   <div dangerouslySetInnerHTML={{ __html: formatText(message.content) }} />
                 )}
               </div>
               {message.role === "user" && (
