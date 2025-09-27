@@ -59,12 +59,9 @@ export function RecipeAnalysisClient() {
 
   const formatText = (text: string) => {
     return text
-      .replace(/^\s*[\*\-]\s*/gm, '') // Remove bullet points
+      .replace(/^\s*[\*\-]\s*/gm, '') // Remove bullet points at the start of lines
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Make keys bold
-      .split('\n')
-      .filter(line => line.trim() !== '')
-      .map(line => `<p>${line}</p>`)
-      .join('');
+      .replace(/\n/g, '<br />'); // Ensure new lines are rendered
   };
 
 
@@ -155,7 +152,7 @@ export function RecipeAnalysisClient() {
                   <AccordionTrigger>Nutritional Analysis</AccordionTrigger>
                   <AccordionContent>
                     <div 
-                      className="prose prose-sm dark:prose-invert max-w-none font-body text-foreground space-y-2"
+                      className="prose prose-sm dark:prose-invert max-w-none font-body text-foreground"
                       dangerouslySetInnerHTML={{ __html: formatText(analysis.nutritionalAnalysis) }} 
                     />
                   </AccordionContent>
@@ -164,7 +161,7 @@ export function RecipeAnalysisClient() {
                   <AccordionTrigger>Ayurvedic Analysis</AccordionTrigger>
                   <AccordionContent>
                     <div 
-                      className="prose prose-sm dark:prose-invert max-w-none font-body text-foreground space-y-2"
+                      className="prose prose-sm dark:prose-invert max-w-none font-body text-foreground"
                       dangerouslySetInnerHTML={{ __html: formatText(analysis.ayurvedicAnalysis) }} 
                     />
                   </AccordionContent>
