@@ -45,6 +45,8 @@ export function DietPlanToolClient() {
   const [error, setError] = useState<string | null>(null);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [editedPlan, setEditedPlan] = useState<string>("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -59,6 +61,13 @@ export function DietPlanToolClient() {
     return () => unsubscribe();
   }, []);
 
+  // When a new diet plan is generated, reset edit state
+  useEffect(() => {
+    if (dietPlan) {
+      setEditedPlan(dietPlan);
+      setEditing(false);
+    }
+  }, [dietPlan]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -109,8 +118,40 @@ export function DietPlanToolClient() {
     setSaving(false);
   };
 
+  // Helper: Format markdown-like text for PDF
+  function formatDietPlanForPDF(markdown: string): string[] {
+    const lines = markdown.split('\n');
+    const formatted: string[] = [];
+    lines.forEach(line => {
+      // Headings: lines starting with ## or #
+      if (/^#+\s/.test(line)) {
+        formatted.push('\n' + line.replace(/^#+\s/, '').toUpperCase());
+      }
+      // Bullet points: lines starting with * or -
+      else if (/^\s*[\*\-]\s/.test(line)) {
+        formatted.push('• ' + line.replace(/^\s*[\*\-]\s/, ''));
+      }
+      // Numbered lists: lines starting with 1. 2. etc.
+      else if (/^\s*\d+\.\s/.test(line)) {
+        formatted.push(line.trim());
+      }
+      // Bold: **text**
+      else if (/\*\*(.*?)\*\*/.test(line)) {
+        formatted.push(line.replace(/\*\*(.*?)\*\*/g, '$1'));
+      }
+      // Italic: *text*
+      else if (/\*(.*?)\*/.test(line)) {
+        formatted.push(line.replace(/\*(.*?)\*/g, '$1'));
+      }
+      else {
+        formatted.push(line.trim());
+      }
+    });
+    return formatted.filter(l => l.length > 0);
+  }
+
   const handleExportPDF = () => {
-    if (!dietPlan) return;
+    if (!dietPlan && !editedPlan) return;
     const doc = new jsPDF();
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
@@ -119,7 +160,6 @@ export function DietPlanToolClient() {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(12);
 
-    // Example: Add patient info and diet plan details
     let y = 35;
     const selectedPatient = patients.find(p => p.id === selectedPatientId);
     if (selectedPatient) {
@@ -128,12 +168,19 @@ export function DietPlanToolClient() {
       doc.text(`Age: ${selectedPatient.age} | Gender: ${selectedPatient.gender}`, 20, y);
       y += 8;
     }
-    doc.text("Diet Plan:", 20, y);
-    y += 8;
 
-    // Split diet plan text into lines for PDF
-    const lines = doc.splitTextToSize(dietPlan, 170);
-    doc.text(lines, 20, y);
+    // Format diet plan for PDF
+    const lines = formatDietPlanForPDF(editedPlan || dietPlan || "");
+    lines.forEach(line => {
+      // Bold headings
+      if (/^[A-Z\s]+$/.test(line) && line.length > 0) {
+        doc.setFont("helvetica", "bold");
+      } else {
+        doc.setFont("helvetica", "normal");
+      }
+      doc.text(line, 20, y);
+      y += 8;
+    });
 
     doc.save("AyurBalance-Diet-Plan.pdf");
   };
@@ -206,10 +253,27 @@ export function DietPlanToolClient() {
         <Card className="min-h-[400px]">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="font-headline text-2xl text-primary">Generated Diet Plan</CardTitle>
-             <Button variant="outline" size="icon" onClick={() => window.print()} disabled={!dietPlan}>
-              <Printer className="h-4 w-4" />
-              <span className="sr-only">Print</span>
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleExportPDF}
+                disabled={!dietPlan}
+              >
+                <Printer className="h-4 w-4" />
+                <span className="sr-only">Export as PDF</span>
+              </Button>
+              {dietPlan && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setEditing((prev) => !prev)}
+                  aria-label="Edit"
+                >
+                  ✏️
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             {loading && (
@@ -219,10 +283,17 @@ export function DietPlanToolClient() {
               </div>
             )}
             {error && <p className="text-destructive">{error}</p>}
-            {dietPlan && (
+            {dietPlan && !editing && (
               <div
                 className="prose prose-sm dark:prose-invert max-w-none font-body text-foreground"
-                dangerouslySetInnerHTML={{ __html: formatPlan(dietPlan) }}
+                dangerouslySetInnerHTML={{ __html: formatPlan(editedPlan) }}
+              />
+            )}
+            {dietPlan && editing && (
+              <Textarea
+                className="min-h-[200px] font-body"
+                value={editedPlan}
+                onChange={e => setEditedPlan(e.target.value)}
               />
             )}
             {!loading && !dietPlan && !error && (
@@ -232,7 +303,7 @@ export function DietPlanToolClient() {
               </div>
             )}
           </CardContent>
-           {dietPlan && (
+          {dietPlan && (
             <CardContent>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Select onValueChange={setSelectedPatientId} value={selectedPatientId || ''}>
