@@ -4,32 +4,33 @@
 
 @layer base {
   :root {
-    --background: 39 51% 91%; /* #F2E8D5 Light Beige */
-    --foreground: 28 100% 10%;
-    --card: 39 51% 94%;
-    --card-foreground: 28 100% 10%;
-    --popover: 39 51% 94%;
-    --popover-foreground: 28 100% 10%;
-    --primary: 91 39% 33%; /* #3E6414 Forest Green */
-    --primary-foreground: 91 39% 98%;
-    --secondary: 39 30% 85%;
-    --secondary-foreground: 28 100% 10%;
-    --muted: 39 30% 88%;
-    --muted-foreground: 28 50% 30%;
-    --accent: 91 39% 33%; /* Changed to Forest Green */
-    --accent-foreground: 91 39% 98%;
+    /* Soft & Warm Palette */
+    --background: 39 36% 91%; /* #f1ebe1 */
+    --foreground: 12 21% 22%; /* #613f3c (deep brown) for text */
+    --card: 39 36% 94%; /* slightly lighter than background */
+    --card-foreground: 12 21% 22%;
+    --popover: 39 36% 94%;
+    --popover-foreground: 12 21% 22%;
+    --primary: 12 21% 22%; /* #613f3c deep brown */
+    --primary-foreground: 0 0% 100%; /* white */
+    --secondary: 17 49% 65%; /* #c87058 terracotta */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 39 36% 80%; /* #cdc1aa beige */
+    --muted-foreground: 12 21% 22%;
+    --accent: 17 49% 65%; /* #c87058 terracotta */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 39 20% 80%;
-    --input: 39 20% 85%;
-    --ring: 91 39% 33%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 39 36% 80%; /* #cdc1aa beige */
+    --input: 39 36% 85%;
+    --ring: 17 49% 65%;
     --radius: 0.5rem;
 
-    --chart-1: 91 39% 33%;
-    --chart-2: 28 100% 38%;
-    --chart-3: 39 51% 70%;
-    --chart-4: 91 40% 60%;
-    --chart-5: 28 80% 60%;
+    --chart-1: 12 21% 22%;
+    --chart-2: 17 49% 65%;
+    --chart-3: 39 36% 80%;
+    --chart-4: 39 36% 91%;
+    --chart-5: 39 36% 94%;
   }
 
   .dark {

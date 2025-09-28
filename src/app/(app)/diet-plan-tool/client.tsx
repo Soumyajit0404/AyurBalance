@@ -30,7 +30,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Sparkles, Printer, NotebookText, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Patient } from "@/app/(app)/patients/patient-form";
-
+import jsPDF from "jspdf";
 
 const formSchema = z.object({
   patientData: z.string().min(20, {
@@ -107,6 +107,35 @@ export function DietPlanToolClient() {
       });
     }
     setSaving(false);
+  };
+
+  const handleExportPDF = () => {
+    if (!dietPlan) return;
+    const doc = new jsPDF();
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("AyurBalance Diet Plan", 20, 20);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+
+    // Example: Add patient info and diet plan details
+    let y = 35;
+    const selectedPatient = patients.find(p => p.id === selectedPatientId);
+    if (selectedPatient) {
+      doc.text(`Patient: ${selectedPatient.name}`, 20, y);
+      y += 8;
+      doc.text(`Age: ${selectedPatient.age} | Gender: ${selectedPatient.gender}`, 20, y);
+      y += 8;
+    }
+    doc.text("Diet Plan:", 20, y);
+    y += 8;
+
+    // Split diet plan text into lines for PDF
+    const lines = doc.splitTextToSize(dietPlan, 170);
+    doc.text(lines, 20, y);
+
+    doc.save("AyurBalance-Diet-Plan.pdf");
   };
 
   const formatPlan = (text: string) => {
@@ -227,6 +256,14 @@ export function DietPlanToolClient() {
           )}
         </Card>
       </div>
+      {dietPlan && (
+        <Button
+          className="mt-4 px-4 py-2 rounded bg-[#c87058] text-white font-bold hover:bg-[#613f3c]"
+          onClick={handleExportPDF}
+        >
+          Export as PDF
+        </Button>
+      )}
     </div>
   );
 }

@@ -46,10 +46,10 @@ const tools = [
     title: "Recipe Analysis",
     description: "Analyze any recipe for its nutritional and Ayurvedic properties.",
     icon: <Pipette className="size-8 text-primary" />,
-    href: "/recipe-analysis",
+    href: "/public/recipe-analysis",
     image: {
-      url: "https://picsum.photos/seed/recipe-analysis/600/400",
-      alt: "Hands preparing ingredients for a healthy meal",
+      url: "/recipe-analysis.jpg",
+      alt: "Recipe Analysis",
       hint: "cooking food",
     },
   },
@@ -57,26 +57,25 @@ const tools = [
     title: "Ayurvedic Q&A",
     description: "Ask our AI assistant about diet, wellness, and Ayurvedic principles.",
     icon: <MessageCircleQuestion className="size-8 text-primary" />,
-    href: "/q-and-a",
+    href: "/public/Ayurvedic",
     image: {
-      url: "https://picsum.photos/seed/q-and-a/600/400",
+      url: "/Ayurvedic.jpg",
       alt: "A person looking at a laptop and thinking",
       hint: "person thinking",
     },
   },
   {
-    title: "Wellness Journey",
+    title: "Patient Wellness Journey",
     description: "Visualize patient progress and dosha balance over time.",
     icon: <TrendingUp className="size-8 text-primary" />,
-    href: "/profile",
+    href: "/public/Patient",
     image: {
-      url: "https://picsum.photos/seed/wellness-chart/600/400",
+      url: "/Patient.jpg",
       alt: "A chart showing an upward trend line",
       hint: "progress chart",
     },
   },
 ]
-
 
 export default function DashboardPage() {
   return (
