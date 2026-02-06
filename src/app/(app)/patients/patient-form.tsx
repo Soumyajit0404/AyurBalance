@@ -39,6 +39,8 @@ const PatientFormSchema = z.object({
   waterIntake: z.string().optional(),
   allergies: z.string().optional(),
   notes: z.string().optional(),
+  lastVisit: z.string().optional(),
+  createdAt: z.string().optional(),
 });
 
 export type Patient = z.infer<typeof PatientFormSchema>;

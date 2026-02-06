@@ -2,7 +2,7 @@
 // This file is intended for server-side code and is not exposed to the client.
 // For client-side Firebase initialization, use `lib/firebase-client.ts`.
 
-import { initializeApp, getApps, getApp, credential } from "firebase-admin/app";
+import { initializeApp, getApps, getApp, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
 import { getStorage } from "firebase-admin/storage";
@@ -21,11 +21,11 @@ const serviceAccount = {
 };
 
 const firebaseConfig = {
-  credential: credential.cert(serviceAccount as any),
+  credential: cert(serviceAccount as any),
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
 };
 
-let app;
+let app: ReturnType<typeof initializeApp> | undefined;
 if (getApps().length === 0) {
   try {
     app = initializeApp(firebaseConfig);
@@ -36,8 +36,8 @@ if (getApps().length === 0) {
   app = getApp();
 }
 
-const dbAdmin = getFirestore(app);
-const authAdmin = getAuth(app);
-const storageAdmin = getStorage(app).bucket();
+const dbAdmin = app ? getFirestore(app) : (null as unknown as ReturnType<typeof getFirestore>);
+const authAdmin = app ? getAuth(app) : (null as unknown as ReturnType<typeof getAuth>);
+const storageAdmin = app ? getStorage(app).bucket() : (null as unknown as ReturnType<typeof getStorage>["bucket"]);
 
 export { dbAdmin, authAdmin, storageAdmin };

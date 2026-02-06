@@ -29,9 +29,11 @@ if (!admin.apps.length) {
   }
 }
 
-let dbAdmin: admin.firestore.Firestore, 
-    authAdmin: admin.auth.Auth, 
-    storageAdmin: admin.storage.Bucket;
+type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
+
+let dbAdmin: admin.firestore.Firestore;
+let authAdmin: admin.auth.Auth;
+let storageAdmin: StorageBucket;
 
 // Only export services if the app was initialized
 if (admin.apps.length > 0) {
@@ -42,7 +44,7 @@ if (admin.apps.length > 0) {
     // Provide dummy objects to prevent app from crashing on import if initialization failed
     dbAdmin = {} as admin.firestore.Firestore;
     authAdmin = {} as admin.auth.Auth;
-    storageAdmin = {} as admin.storage.Bucket;
+    storageAdmin = {} as StorageBucket;
 }
 
 

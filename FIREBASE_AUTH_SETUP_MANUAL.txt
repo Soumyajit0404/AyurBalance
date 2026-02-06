@@ -1,0 +1,169 @@
+================================================================================
+  FIREBASE AUTHENTICATION SETUP MANUAL — AyurBalance
+================================================================================
+
+This manual explains exactly what you need to do manually in the Firebase
+Console and in your project so that Email/Password and "Sign in with Google"
+work. No extra API keys are needed for Google — the same Firebase Web app
+config is used for both.
+
+--------------------------------------------------------------------------------
+  STEP 1 — Create a Firebase project (if you don’t have one)
+--------------------------------------------------------------------------------
+
+  1. Go to: https://console.firebase.google.com/
+  2. Click “Add project” (or “Create a project”).
+  3. Enter a project name (e.g. “AyurBalance”).
+  4. You can turn off Google Analytics if you don’t need it.
+  5. Click “Create project” and wait until it’s ready.
+
+--------------------------------------------------------------------------------
+  STEP 2 — Register your app as a Web app and get API keys (config)
+--------------------------------------------------------------------------------
+
+  1. In the Firebase Console, open your project.
+  2. On the Project Overview page, click the “</>” (Web) icon to add a Web app.
+  3. Enter an app nickname (e.g. “AyurBalance Web”) and leave “Firebase Hosting”
+     unchecked unless you use it.
+  4. Click “Register app”.
+  5. You will see a code snippet with “firebaseConfig” containing:
+       apiKey: "..."
+       authDomain: "..."
+       projectId: "..."
+       storageBucket: "..."
+       messagingSenderId: "..."
+       appId: "..."
+  6. Copy these values — you will put them in .env.local (Step 5).
+  7. You can skip the “Add Firebase SDK” steps; the project already uses the SDK.
+  8. Click “Continue to console”.
+
+--------------------------------------------------------------------------------
+  STEP 3 — Enable sign-in methods (Email and Google)
+--------------------------------------------------------------------------------
+
+  1. In the left sidebar, go to: Build → Authentication.
+  2. If prompted, click “Get started” to enable Authentication.
+  3. Open the “Sign-in method” tab.
+  4. Enable “Email/Password”:
+     - Click “Email/Password”.
+     - Turn “Enable” ON.
+     - Leave “Email link” OFF unless you want passwordless sign-in.
+     - Click “Save”.
+  5. Enable “Google”:
+     - Click “Google”.
+     - Turn “Enable” ON.
+     - Choose a “Project support email” (your email).
+     - Click “Save”.
+
+  You do NOT need to create a separate OAuth client ID in Google Cloud
+  for the Firebase Web app — Firebase creates and uses it for you. The same
+  Web app config (API key, project ID, etc.) is used for both Email and
+  Google sign-in.
+
+--------------------------------------------------------------------------------
+  STEP 4 — Add authorized domains (for redirects / popups)
+--------------------------------------------------------------------------------
+
+  1. Still in Authentication, open the “Settings” tab (or “Settings” in the
+     top right of the Sign-in method page).
+  2. Scroll to “Authorized domains”.
+  3. Ensure “localhost” is in the list (it usually is by default). This is
+     needed for “Sign in with Google” and email sign-in when developing
+     on http://localhost:9002.
+  4. When you deploy to production, add your production domain (e.g.
+     yourapp.web.app or your custom domain) to this list.
+
+--------------------------------------------------------------------------------
+  STEP 5 — Put your config in .env.local (API keys / env vars)
+--------------------------------------------------------------------------------
+
+  1. In your AyurBalance project folder, copy the example env file:
+       Copy:  .env.example   →   .env.local
+     (On Windows: copy .env.example .env.local  in Command Prompt.)
+  2. Open .env.local in a text editor.
+  3. Fill in the Firebase Web app config. Use the exact names below; the
+     values come from Step 2 (firebaseConfig):
+
+     NEXT_PUBLIC_FIREBASE_API_KEY="paste-apiKey-here"
+     NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="paste-authDomain-here"
+     NEXT_PUBLIC_FIREBASE_PROJECT_ID="paste-projectId-here"
+     NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="paste-storageBucket-here"
+     NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="paste-messagingSenderId-here"
+     NEXT_PUBLIC_FIREBASE_APP_ID="paste-appId-here"
+
+  4. Save the file. Do NOT commit .env.local to Git (it is already in .gitignore).
+  5. Restart your dev server (npm run dev) after changing .env.local so Next.js
+     picks up the new values.
+
+  These six variables are the only ones required for:
+  - Email/password sign-in and sign-up
+  - “Sign in with Google”
+
+  You do NOT need a separate “Google OAuth client ID” or “Google API key” for
+  Firebase Auth Google sign-in — the Firebase API key and project config above
+  are enough.
+
+--------------------------------------------------------------------------------
+  STEP 6 — Run the app and test
+--------------------------------------------------------------------------------
+
+  1. Install dependencies (if not already):
+       npm install
+  2. Start the dev server:
+       npm run dev
+  3. Open in the browser: http://localhost:9002
+  4. You should be redirected to the login page.
+  5. Test “Continue with Google” — a Google popup should open; sign in and
+     you should be redirected to the dashboard.
+  6. Test “Sign up” with email/password — create an account and you should
+     be redirected to the dashboard.
+  7. Sign out and test “Sign in” with the same email/password.
+
+--------------------------------------------------------------------------------
+  TROUBLESHOOTING
+--------------------------------------------------------------------------------
+
+  - “Google Sign-In Failed” or popup blocked
+    - Ensure “Google” is enabled in Authentication → Sign-in method.
+    - Ensure “localhost” is in Authorized domains.
+    - Allow popups for http://localhost:9002 in your browser.
+
+  - “Auth domain not authorized”
+    - Add your current origin (e.g. http://localhost:9002 or your production
+      URL) to Authorized domains in Authentication → Settings.
+
+  - “Invalid API key” or blank login page
+    - Check that .env.local has all six NEXT_PUBLIC_FIREBASE_* variables.
+    - Restart the dev server after editing .env.local.
+    - In Next.js, only variables starting with NEXT_PUBLIC_ are available
+      in the browser; names must match exactly.
+
+  - Email sign-in works but Google doesn’t (or vice versa)
+    - Confirm both “Email/Password” and “Google” are enabled in the
+      Sign-in method tab.
+    - Clear browser cache/cookies for localhost and try again.
+
+--------------------------------------------------------------------------------
+  QUICK REFERENCE — Where to find what in Firebase Console
+--------------------------------------------------------------------------------
+
+  Project settings (for API keys / config):
+    (Project Overview) → ⚙️ Project settings → Your apps → Web app → Config
+
+  Enable Email/Password and Google:
+    Build → Authentication → Sign-in method → Email/Password & Google
+
+  Authorized domains:
+    Build → Authentication → Settings → Authorized domains
+
+  .env.local (in project root):
+    NEXT_PUBLIC_FIREBASE_API_KEY
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    NEXT_PUBLIC_FIREBASE_APP_ID
+
+================================================================================
+  End of manual — you’re ready to use Sign in and Sign up with Email and Google.
+================================================================================

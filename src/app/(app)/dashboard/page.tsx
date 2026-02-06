@@ -46,7 +46,7 @@ const tools = [
     title: "Recipe Analysis",
     description: "Analyze any recipe for its nutritional and Ayurvedic properties.",
     icon: <Pipette className="size-8 text-primary" />,
-    href: "/public/recipe-analysis",
+    href: "/recipe-analysis",
     image: {
       url: "/recipe-analysis.jpg",
       alt: "Recipe Analysis",
@@ -57,7 +57,7 @@ const tools = [
     title: "Ayurvedic Q&A",
     description: "Ask our AI assistant about diet, wellness, and Ayurvedic principles.",
     icon: <MessageCircleQuestion className="size-8 text-primary" />,
-    href: "/public/Ayurvedic",
+    href: "/q-and-a",
     image: {
       url: "/Ayurvedic.jpg",
       alt: "A person looking at a laptop and thinking",
@@ -68,7 +68,7 @@ const tools = [
     title: "Patient Wellness Journey",
     description: "Visualize patient progress and dosha balance over time.",
     icon: <TrendingUp className="size-8 text-primary" />,
-    href: "/public/Patient",
+    href: "/profile",
     image: {
       url: "/Patient.jpg",
       alt: "A chart showing an upward trend line",

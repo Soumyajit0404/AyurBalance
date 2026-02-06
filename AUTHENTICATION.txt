@@ -1,0 +1,127 @@
+================================================================================
+AYURBALANCE - AUTHENTICATION DOCUMENTATION
+================================================================================
+
+This file describes how authentication is implemented and configured in AyurBalance.
+
+--------------------------------------------------------------------------------
+1. OVERVIEW
+--------------------------------------------------------------------------------
+
+AyurBalance uses Firebase Authentication for user sign-in and sign-up. The app
+supports:
+  - Email/password login and sign-up (with optional display name)
+  - Sign in with Google (same Firebase config; no extra API keys)
+  - Client-side auth state (AuthProvider)
+  - Protected routes: dashboard and all (app) routes require a logged-in user
+
+For step-by-step setup (Firebase Console, API keys, enabling Google), see
+FIREBASE_AUTH_SETUP_MANUAL.txt in the project root.
+
+--------------------------------------------------------------------------------
+2. FILES INVOLVED
+--------------------------------------------------------------------------------
+
+  Client-side (browser):
+  - src/lib/firebase-client.ts   : Firebase app init (Auth, Firestore, Storage)
+                                   Uses NEXT_PUBLIC_* env vars only.
+  - src/hooks/use-auth.tsx       : React context for current user, loading, logout
+  - src/app/(auth)/login/page.tsx: Login page (wraps client component)
+  - src/app/(auth)/login/client.tsx: Login + Sign-up UI; Email/Password and
+                                     Sign in with Google (signInWithPopup + GoogleAuthProvider)
+  - src/app/(app)/layout.tsx     : Redirects to /login if not authenticated
+
+  Root layout:
+  - src/app/layout.tsx           : Wraps app in AuthProvider so useAuth() works
+
+  Server-side (optional, for admin/audit):
+  - src/lib/firebase.ts          : Firebase Admin SDK (Firestore, Auth, Storage)
+                                   Used by audit.ts; requires service account env vars.
+  - src/lib/firebase-admin.ts    : Alternative Firebase Admin init (default package)
+  - src/lib/audit.ts             : logAudit() writes to Firestore auditLogs (uses firebase.ts)
+
+--------------------------------------------------------------------------------
+3. AUTH FLOW
+--------------------------------------------------------------------------------
+
+  1. User opens the app -> Root layout renders AuthProvider.
+  2. AuthProvider subscribes to onAuthStateChanged(auth, callback).
+  3. If user is null and they visit a route under (app)/ (e.g. /dashboard),
+     (app)/layout.tsx runs: useAuth() returns { user, loading }. When loading
+     is false and user is null, router.push("/login") and a loading UI is shown.
+  4. On /login, user can sign in with Google (signInWithPopup + GoogleAuthProvider),
+     or sign in/sign up with email and password. On success, router.push("/dashboard").
+  5. Logout: useAuth().logout() calls signOut(auth) and router.push("/login").
+
+--------------------------------------------------------------------------------
+4. ENVIRONMENT VARIABLES (CLIENT - REQUIRED FOR LOGIN)
+--------------------------------------------------------------------------------
+
+Create a file named .env.local in the project root (do not commit it; .env* is
+in .gitignore). These are required for Firebase client auth and app features:
+
+  NEXT_PUBLIC_FIREBASE_API_KEY="..."
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN="your-project.firebaseapp.com"
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID="your-project-id"
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="your-project.appspot.com"
+  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID="..."
+  NEXT_PUBLIC_FIREBASE_APP_ID="..."
+
+You get these from: Firebase Console -> Project Settings -> Your apps -> Web app
+config (firebaseConfig). Use the same project for Auth, Firestore, and Storage.
+
+--------------------------------------------------------------------------------
+5. ENVIRONMENT VARIABLES (SERVER - OPTIONAL)
+--------------------------------------------------------------------------------
+
+Required only if you use server-side Firebase Admin (e.g. audit logging with
+src/lib/audit.ts or other server routes using src/lib/firebase.ts). In .env.local:
+
+  FIREBASE_TYPE="service_account"
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID="your-project-id"   (same as above)
+  FIREBASE_PRIVATE_KEY_ID="..."
+  FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+  FIREBASE_CLIENT_EMAIL="...@....iam.gserviceaccount.com"
+  FIREBASE_CLIENT_ID="..."
+  FIREBASE_AUTH_URI="https://accounts.google.com/o/oauth2/auth"
+  FIREBASE_TOKEN_URI="https://oauth2.googleapis.com/token"
+  FIREBASE_AUTH_PROVIDER_X509_CERT_URL="https://www.googleapis.com/oauth2/v1/certs"
+  FIREBASE_CLIENT_X509_CERT_URL="https://www.googleapis.com/robot/v1/metadata/x509/..."
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET="your-project.appspot.com"
+
+Get these from: Firebase Console -> Project Settings -> Service accounts ->
+Generate new private key (JSON). Map the JSON keys to the env var names above;
+for FIREBASE_PRIVATE_KEY, keep the \n in the key as literal newlines or use
+\\n in the .env and the code will replace \\n with \n.
+
+--------------------------------------------------------------------------------
+6. FIREBASE CONSOLE SETUP (AUTH)
+--------------------------------------------------------------------------------
+
+  - Enable "Email/Password" sign-in method: Authentication -> Sign-in method.
+  - (Optional) Configure authorized domains so your dev URL (e.g. localhost)
+    is allowed.
+  - (Optional) Enable Firestore and Storage and set security rules so only
+    authenticated users can read/write as intended.
+
+--------------------------------------------------------------------------------
+7. PROTECTED ROUTES
+--------------------------------------------------------------------------------
+
+  - All routes under src/app/(app)/ (e.g. /dashboard, /patients, /profile,
+    /diet-plan-tool, /recipe-analysis, /q-and-a, /food-database, /settings,
+    /setup) are protected. (app)/layout.tsx checks useAuth(); if not logged in,
+    it redirects to /login and shows a loading state until redirect.
+  - /login and the root / (which redirects to /login) are public.
+
+--------------------------------------------------------------------------------
+8. HOW TO RUN THE APP
+--------------------------------------------------------------------------------
+
+  1. Copy .env.example to .env.local and fill in your Firebase client env vars.
+  2. Run: npm install
+  3. Run: npm run dev
+  4. Open http://localhost:9002 in the browser.
+  5. Use "Sign Up" to create an account or "Login" with existing credentials.
+
+================================================================================

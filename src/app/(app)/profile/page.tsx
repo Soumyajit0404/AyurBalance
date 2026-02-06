@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useAuth } from "@/hooks/use-auth.tsx";
+import { useAuth } from "@/hooks/use-auth";
 import { updateProfile, User } from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, storage, db } from "@/lib/firebase-client";
@@ -25,8 +25,8 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { collection, onSnapshot } from "firebase/firestore";
 
-const DOSHA_TYPES = [
-  //"Vata", "Pitta", "Kapha", "Vata-Pitta", "Vata-Kapha", "Pitta-Kapha", "Tridoshic"  \\ hadn't upload since not created in firestore databse
+const DOSHA_TYPES: string[] = [
+  //"Vata", "Pitta", "Kapha", "Vata-Pitta", "Vata-Kapha", "Pitta-Kapha", "Tridoshic"  // hadn't upload since not created in firestore database
 ];
 
 export default function ProfilePage() {
@@ -74,7 +74,7 @@ export default function ProfilePage() {
     setLoading(true);
     try {
       await updateProfile(auth.currentUser, { displayName });
-      setUser({ ...auth.currentUser });
+      setUser(auth.currentUser);
       toast({ title: "Profile Updated", description: "Your changes have been saved." });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Update Failed", description: error.message });
@@ -117,7 +117,7 @@ export default function ProfilePage() {
       await uploadBytes(storageRef, file);
       const photoURL = await getDownloadURL(storageRef);
       await updateProfile(auth.currentUser, { photoURL });
-      setUser({ ...auth.currentUser });
+      setUser(auth.currentUser);
       toast({ title: "Profile Picture Updated", description: "Your new picture is now live." });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Upload Failed", description: error.message });
@@ -193,9 +193,9 @@ export default function ProfilePage() {
           </Button>
         </form>
         <ul>
-          <li><a href="https://archive.org/details/CharakaSamhita" target="_blank" rel="noopener" className="underline"></a></li>
-          <li><a href="https://archive.org/details/AshtangaHridayam" target="_blank" rel="noopener" className="underline"> </a></li>
-          <li><a href="https://archive.org/details/SushrutaSamhita" target="_blank" rel="noopener" className="underline"> </a></li>
+          <li><a href="https://archive.org/details/CharakaSamhita" target="_blank" rel="noopener" className="underline" title="Charaka Samhita">Charaka Samhita</a></li>
+          <li><a href="https://archive.org/details/AshtangaHridayam" target="_blank" rel="noopener" className="underline" title="Ashtanga Hridayam">Ashtanga Hridayam</a></li>
+          <li><a href="https://archive.org/details/SushrutaSamhita" target="_blank" rel="noopener" className="underline" title="Sushruta Samhita">Sushruta Samhita</a></li>
         </ul>
       </div>
     );

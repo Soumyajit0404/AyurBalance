@@ -98,10 +98,10 @@ export default function FoodDatabasePage() {
       .replace(/^\*\s(.*?)$/gm, '<li>$1</li>')
       .replace(/^\s*\-\s(.*?)$/gm, '<li>$1</li>')
        // Wrap list items in <ul>
-      .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+      .replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>')
        // Fix nested lists by removing outer ul if inside li
-      .replace(/<li>(.*?)<ul>/gs, '<li>$1<ul class="pl-4">')
-      .replace(/<\/ul>\n<ul>/gs, '') // Remove gaps between list items
+      .replace(/<li>([\s\S]*?)<ul>/g, '<li>$1<ul class="pl-4">')
+      .replace(/<\/ul>\n<ul>/g, '') // Remove gaps between list items
       .replace(/(\r\n|\n|\r)/gm, "<br />") // Handle line breaks
       .replace(/<br \/>\n*<br \/>/gm, '<br />') // Consolidate multiple breaks
       .replace(/<ul><br \/>/g, '<ul>') // clean up spaces after list starts
